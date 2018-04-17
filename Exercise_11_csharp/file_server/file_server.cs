@@ -29,11 +29,17 @@ namespace Application
 			Console.WriteLine("Server started");
 			while (true) 
 			{
-				byte[] buffer;
+				byte[] buffer = new byte[BUFSIZE];
 				
-				if (link.receive(buffer)) { //something read
+				if (link.receive (ref buffer) != 0) { 
+					Console.WriteLine ("Something received");
+					//something read
+
 					//this must be a filename!
+
 					//send the file
+				} else {
+					Console.WriteLine ("Lol");
 				}
 			}
 
