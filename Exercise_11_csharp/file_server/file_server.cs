@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using Transportlaget;
 using Library;
+using Linklaget;
 
 namespace Application
 {
@@ -24,13 +25,21 @@ namespace Application
 		/// </summary>
 		private file_server ()
 		{
-			// TO DO Your own code
-			/*
-			//opret socket
-			TcpListener serverSocket = new TcpListener (localAddr, PORT);
-			TcpClient clientSocket = default(TcpClient);
-			serverSocket.Start();
+			Link link = new Link(BUFSIZE,APP);
 			Console.WriteLine("Server started");
+			while (true) 
+			{
+				byte[] buffer;
+				
+				if (link.receive(buffer)) { //something read
+					//this must be a filename!
+					//send the file
+				}
+			}
+
+
+
+			/*
 			while (true) {
 				//wait for client
 				clientSocket = serverSocket.AcceptTcpClient ();

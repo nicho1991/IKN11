@@ -79,8 +79,15 @@ namespace Linklaget
 		/// </param>
 		public int receive (ref byte[] buf)
 		{
-	    	// TO DO Your own code
-			return 0;
+			if (!serialPort.IsOpen) {
+				return 0;
+			}
+			int bytesToRead = serialPort.BytesToRead;
+			serialPort.Read(buf, 0, bytesToRead);
+
+
+
+			return buf.Length;
 		}
 	}
 }
