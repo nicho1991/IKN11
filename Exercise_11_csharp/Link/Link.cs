@@ -68,7 +68,11 @@ namespace Linklaget
 		/// </param>
 		public void send (byte[] buf, int size)
 		{
-	    	// TO DO Your own code
+			if (!serialPort.IsOpen) {
+				return;
+			
+				serialPort.Write (buf, 0, size);
+			}
 		}
 
 		/// <summary>
