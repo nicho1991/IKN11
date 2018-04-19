@@ -27,7 +27,7 @@ namespace Application
 		{
 			Link link = new Link(BUFSIZE,APP);
 			Console.WriteLine("Server started");
-			while (true) 
+/*			while (true) 
 			{
 				byte[] buffer = new byte[BUFSIZE];
 				
@@ -137,7 +137,7 @@ namespace Application
 		public static void Main (string[] args)
 		{
 			Console.WriteLine ("Server starts...");
-			new file_server();
+			file_server x = new file_server();
 		}
 	}
 }
