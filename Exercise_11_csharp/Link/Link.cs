@@ -30,18 +30,19 @@ namespace Linklaget
 		public Link (int BUFSIZE, string APP)
 		{
 			// Create a new SerialPort object with default settings.
-//			#if DEBUG
-//				if(APP.Equals("FILE_SERVER"))
-//				{
-//					serialPort = new SerialPort("/dev/pts/0",115200,Parity.None,8,StopBits.One);
-//				}
-//				else
-//				{
-//					serialPort = new SerialPort("/dev/ttySn1",115200,Parity.None,8,StopBits.One);
-//				}
-//			#else
+			#if DEBUG
+				if(APP.Equals("FILE_SERVER"))
+				{
+					serialPort = new SerialPort("/dev/ttySn0",115200,Parity.None,8,StopBits.One);
+				}
+				else
+				{
+					serialPort = new SerialPort("/dev/ttySn1",115200,Parity.None,8,StopBits.One);
+				}
+
+			#else
 				serialPort = new SerialPort("/dev/ttyS1",115200,Parity.None,8,StopBits.One);
-//			#endif
+			#endif
 
 			if(!serialPort.IsOpen)
 				serialPort.Open();
@@ -53,6 +54,7 @@ namespace Linklaget
 
 			serialPort.DiscardInBuffer ();
 			serialPort.DiscardOutBuffer ();
+
 		}
 
 		/// <summary>
@@ -66,7 +68,11 @@ namespace Linklaget
 		/// </param>
 		public void send (byte[] buf, int size)
 		{
-	    	// TO DO Your own code
+			if (!serialPort.IsOpen) {
+				return;
+			
+				serialPort.Write (buf, 0, size);
+			}
 		}
 
 		/// <summary>

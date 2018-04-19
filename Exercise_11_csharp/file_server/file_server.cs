@@ -27,7 +27,7 @@ namespace Application
 		{
 			Link link = new Link(BUFSIZE,APP);
 			Console.WriteLine("Server started");
-/*			while (true) 
+			while (true) 
 			{
 				byte[] buffer = new byte[BUFSIZE];
 				
@@ -39,7 +39,7 @@ namespace Application
 
 					//send the file
 				} else {
-					Console.WriteLine ("Lol");
+					Console.WriteLine ("something went wrong");
 				}
 			}
 
