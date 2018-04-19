@@ -14,6 +14,8 @@ namespace Application
 		private const int BUFSIZE = 1000;
 		private const string APP = "FILE_CLIENT";
 
+
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="file_client"/> class.
 		/// 
@@ -28,6 +30,18 @@ namespace Application
 		/// </param>
 	    private file_client(String[] args)
 	    {
+
+			Linklaget.Link client = new Linklaget.Link (BUFSIZE, APP);
+
+			byte[] req = new byte[256];
+
+			for (int i = 0; i < req.Length; i++) {
+				req [i] = Base64FormattingOptions.None;
+			}
+
+
+			client.send (req, req.Length);
+
 			/*
 			System.Net.Sockets.TcpClient clientSocket = new System.Net.Sockets.TcpClient ();
 			//opretter sockets
