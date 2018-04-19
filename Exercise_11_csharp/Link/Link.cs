@@ -70,9 +70,12 @@ namespace Linklaget
 		{
 			if (!serialPort.IsOpen) {
 				return;
-			
-				serialPort.Write (buf, 0, size);
 			}
+				
+			Console.WriteLine("h");
+
+				serialPort.Write (buf, 0, size);
+
 		}
 
 		/// <summary>

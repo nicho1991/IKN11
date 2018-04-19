@@ -30,14 +30,15 @@ namespace Application
 		/// </param>
 	    private file_client(String[] args)
 	    {
+			
 
 			Linklaget.Link client = new Linklaget.Link (BUFSIZE, APP);
 
 			byte[] req = new byte[256];
 
-			for (int i = 0; i < req.Length; i++) {
-				req [i] = Base64FormattingOptions.None;
-			}
+
+			req = Encoding.ASCII.GetBytes("d");
+		
 
 
 			client.send (req, req.Length);
