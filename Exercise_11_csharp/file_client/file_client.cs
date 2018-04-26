@@ -30,18 +30,15 @@ namespace Application
 		/// </param>
 	    private file_client(String[] args)
 	    {
-			
-
 			Linklaget.Link client = new Linklaget.Link (BUFSIZE, APP);
-
 			byte[] req = new byte[256];
-
-
-			req = Encoding.ASCII.GetBytes("d");
-		
-
-
+			//send en fil request
+			string request = "hAlloB";
+			req = Encoding.ASCII.GetBytes(request);
 			client.send (req, req.Length);
+
+			//vent på at modtage fil her
+
 
 			/*
 			System.Net.Sockets.TcpClient clientSocket = new System.Net.Sockets.TcpClient ();
