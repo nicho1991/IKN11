@@ -59,8 +59,21 @@ namespace Linklaget
 		{
 			if (!serialPort.IsOpen) {
 				return;
+<<<<<<< HEAD
 				serialPort.Write (buf, 0, size);
+=======
+>>>>>>> 6bf26db785693e5acda9a9fed663b3863391f52c
 			}
+			char startEnd = 'A';
+			//convert to string so we can manipulate
+			string request = System.Text.Encoding.ASCII.GetString (buf);
+			//follow protocol
+			string send = startEnd + request.Replace ("B", "BD").Replace ("A", "BC") + startEnd;
+			//convert back to byte[]
+			buf = System.Text.Encoding.ASCII.GetBytes (send);
+			//send the message
+			serialPort.Write (buf, 0, buf.Length);
+
 		}
 
 		/// <summary>
