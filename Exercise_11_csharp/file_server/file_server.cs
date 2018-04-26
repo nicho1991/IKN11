@@ -31,15 +31,16 @@ namespace Application
 			{
 				byte[] buffer = new byte[BUFSIZE];
 				
-				if (link.receive (ref buffer) != 0) { 
-					Console.WriteLine ("Something received");
-					//something read
-
+				if (link.receive (ref buffer) > 0) { 
+					//check what we got here
+					string received = System.Text.Encoding.ASCII.GetString(buffer);
 					//this must be a filename!
+					Console.WriteLine($"After link layer server got filename: {received}");
 
 					//send the file
-				} else {
-					Console.WriteLine ("something went wrong");
+				} 
+				else {
+					
 				}
 			}
 

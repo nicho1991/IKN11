@@ -30,19 +30,8 @@ namespace Linklaget
 		public Link (int BUFSIZE, string APP)
 		{
 			// Create a new SerialPort object with default settings.
-			#if DEBUG
-				if(APP.Equals("FILE_SERVER"))
-				{
-					serialPort = new SerialPort("/dev/ttySn0",115200,Parity.None,8,StopBits.One);
-				}
-				else
-				{
-					serialPort = new SerialPort("/dev/ttySn1",115200,Parity.None,8,StopBits.One);
-				}
-
-			#else
 				serialPort = new SerialPort("/dev/ttyS1",115200,Parity.None,8,StopBits.One);
-			#endif
+
 
 			if(!serialPort.IsOpen)
 				serialPort.Open();
@@ -70,7 +59,6 @@ namespace Linklaget
 		{
 			if (!serialPort.IsOpen) {
 				return;
-			
 				serialPort.Write (buf, 0, size);
 			}
 		}
@@ -89,12 +77,34 @@ namespace Linklaget
 			if (!serialPort.IsOpen) {
 				return 0;
 			}
+			//read from the port
 			int bytesToRead = serialPort.BytesToRead;
-			serialPort.Read(buf, 0, bytesToRead);
+
+			//check if there is something to read
+			if(bytesToRead > 0){
+				serialPort.Read (buf, 0, bytesToRead);
+
+				//convert to ascii so we can revert to normal
+				string received = System.Text.Encoding.ASCII.GetString(buf);
+				Console.WriteLine ($"Link laget modtog: {received}");
 
 
+				//see that message is contained in A - A
+				if(received.StartsWith("A") && received.EndsWith("A"))
+				{
+				//remove Start and end
+				string normal = received.Replace("A","");
+				normal = normal.Replace("BD","B").Replace("BC","A");
+				//convert to byte[] and set buf
+				buf = System.Text.Encoding.ASCII.GetBytes(normal);
+				return buf.Length;
+				}
+				return 0;
+			}
 
-			return buf.Length;
+			return 0;
+
+
 		}
 	}
 }
