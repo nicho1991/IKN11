@@ -59,10 +59,9 @@ namespace Linklaget
 		{
 			if (!serialPort.IsOpen) {
 				return;
-<<<<<<< HEAD
+
 				serialPort.Write (buf, 0, size);
-=======
->>>>>>> 6bf26db785693e5acda9a9fed663b3863391f52c
+
 			}
 			char startEnd = 'A';
 			//convert to string so we can manipulate
