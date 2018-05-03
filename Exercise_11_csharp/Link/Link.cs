@@ -68,9 +68,12 @@ namespace Linklaget
 			string request = System.Text.Encoding.ASCII.GetString (buf);
 			//follow protocol
 			string send = startEnd + request.Replace ("B", "BD").Replace ("A", "BC") + startEnd;
+			Console.WriteLine($"Link laget sender {send}");
+
 			//convert back to byte[]
 			buf = System.Text.Encoding.ASCII.GetBytes (send);
 			//send the message
+
 			serialPort.Write (buf, 0, buf.Length);
 
 		}
