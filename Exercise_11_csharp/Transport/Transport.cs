@@ -80,7 +80,7 @@ namespace Transportlaget
 			if (!checksum.checkChecksum (buf, (int)TransSize.ACKSIZE) || buf [(int)TransCHKSUM.SEQNO] != seqNo || buf [(int)TransCHKSUM.TYPE] != (int)TransType.ACK)
 				return DEFAULT_SEQNO;
 			return seqNo;
-			
+
 		}
 
 
@@ -119,15 +119,29 @@ namespace Transportlaget
 		{
 			do
 			{
+				
+
 				buffer[2] = seqNo;
+
 				buffer[3] = 0;
+
 				for (int i = 0; i < size; i++)
 				{
 					buffer[i+4] = buf[i];
 				}
+
 				Checksum checksum = new Checksum();
 				checksum.calcChecksum(ref buffer,size);
-				link.send(buffer, size+4);
+
+
+				for(int i = 0 ; i < 10 ; i++)
+				{
+					Console.WriteLine(buffer[i]);
+				}
+
+				Console.WriteLine("here"+request);
+
+				link.send(buf, size+4);
 			} while (receiveAck() != seqNo);
 			nextSeqNo(); ////////////////////////////////////// update seqNo
 			old_seqNo = DEFAULT_SEQNO;
@@ -143,7 +157,18 @@ namespace Transportlaget
 		/// </param>
 		public int receive (ref byte[] buf)
 		{
-			// TO DO Your own code
+			//finde ud af checksum
+
+
+
+			//sende ack eller ikke
+
+
+
+
+
+			link.receive (ref buf);
+
 			return 0;
 		}
 	}

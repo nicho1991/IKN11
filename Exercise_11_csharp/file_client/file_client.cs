@@ -31,22 +31,22 @@ namespace Application
 	    private file_client(String[] args)
 	    {
 			///check for link lag
+
 			Linklaget.Link client = new Linklaget.Link (BUFSIZE, APP);
 			byte[] req = new byte[256];
 			//send en fil request
 			string request = "hAlloB";
 			Console.WriteLine($"trying to send {request}");
 			req = Encoding.ASCII.GetBytes(request);
+			/*
 			client.send (req, req.Length);
+			*/
 
 			///check for transport lag
-			string requestTransport = "a"; //bits = 01100001
 			Transportlaget.Transport transport = new Transportlaget.Transport(BUFSIZE,APP);
-			Console.WriteLine ($"trying to send {requestTransport}");
-			byte[] transportRequestByte = new byte[256];
-			transport.send (transportRequestByte, transportRequestByte.Length);
+			transport.send (req, req.Length);
 
-
+			
 
 			//vent på at modtage fil her
 
