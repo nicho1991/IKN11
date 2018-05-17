@@ -48,11 +48,14 @@ namespace Transportlaget
 		/// </summary>
 		private int recvSize = 0;
 
+
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Transport"/> class.
 		/// </summary>
 		public Transport (int BUFSIZE, string APP)
 		{
+
 			link = new Link(BUFSIZE+(int)TransSize.ACKSIZE, APP);
 			checksum = new Checksum();
 			buffer = new byte[BUFSIZE+(int)TransSize.ACKSIZE];
@@ -70,24 +73,21 @@ namespace Transportlaget
 		/// </returns>
 		private byte receiveAck()
 		{
-			recvSize = link.receive(ref buffer);
-			dataReceived = true;
-
-			if (recvSize == (int)TransSize.ACKSIZE) {
-				dataReceived = false;
-				if (!checksum.checkChecksum (buffer, (int)TransSize.ACKSIZE) ||
-				  buffer [(int)TransCHKSUM.SEQNO] != seqNo ||
-				  buffer [(int)TransCHKSUM.TYPE] != (int)TransType.ACK)
-				{
-					seqNo = (byte) buffer[(int)TransCHKSUM.SEQNO];
-				}
-				else
-				{
-					seqNo = (byte)((buffer[(int)TransCHKSUM.SEQNO] + 1) % 2);
-				}
-			}
- 
+			byte[] buf = new byte[(int)TransSize.ACKSIZE];
+			int size = link.receive (ref buf);
+			if (size != (int)TransSize.ACKSIZE)
+				return DEFAULT_SEQNO;
+			if (!checksum.calcChecksum (buf, (int)TransSize.ACKSIZE) || buf [(int)TransCHKSUM.SEQNO] != seqNo || buf [(int)TransCHKSUM.TYPE] != (int)TransType.ACK)
+				return DEFAULT_SEQNO;
 			return seqNo;
+			
+		}
+
+
+
+		private void nextSeqNo()
+		{
+			seqNo = (byte)((seqNo + 1) % 2);
 		}
 
 		/// <summary>
@@ -115,10 +115,25 @@ namespace Transportlaget
 		/// <param name='size'>
 		/// Size.
 		/// </param>
-		public void send(byte[] buf, int size)
+		public void send(byte buf,int size )
 		{
-			// TO DO Your own code
+			do
+			{
+				buffer[2] = seqNo;
+				buffer[3] = 0;
+				for (int i = 0; i < size; i++)
+				{
+					buffer[i+4] = buf[i];
+				}
+				Checksum checksum = new Checksum();
+				checksum.calcChecksum(buf,size);
+				link.send(buffer, size+4);
+			} while (receiveAck() != seqNo);
+			nextSeqNo(); ////////////////////////////////////// update seqNo
+			old_seqNo = DEFAULT_SEQNO;
 		}
+
+
 
 		/// <summary>
 		/// Receive the specified buffer.
