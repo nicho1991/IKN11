@@ -133,15 +133,13 @@ namespace Transportlaget
 				Checksum checksum = new Checksum();
 				checksum.calcChecksum(ref buffer,size);
 
-
+				//check what we got
 				for(int i = 0 ; i < 10 ; i++)
 				{
 					Console.WriteLine(buffer[i]);
-				}
+				}					
 
-				Console.WriteLine("here"+request);
-
-				link.send(buf, size+4);
+				link.send(buffer, size+4);
 			} while (receiveAck() != seqNo);
 			nextSeqNo(); ////////////////////////////////////// update seqNo
 			old_seqNo = DEFAULT_SEQNO;
