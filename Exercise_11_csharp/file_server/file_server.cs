@@ -25,13 +25,14 @@ namespace Application
 		/// </summary>
 		private file_server ()
 		{
-			Link link = new Link(BUFSIZE,APP);
+			//Link link = new Link(BUFSIZE,APP);
+			Transport transport = new Transport (BUFSIZE, APP);
 			Console.WriteLine("Server started");
 			while (true) 
 			{
 				byte[] buffer = new byte[BUFSIZE];
 				
-				if (link.receive (ref buffer) > 0) { 
+				if (transport.receive (ref buffer) > 0) { 
 					//check what we got here
 					string received = System.Text.Encoding.ASCII.GetString(buffer);
 					//this must be a filename!

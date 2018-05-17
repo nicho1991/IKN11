@@ -68,7 +68,7 @@ namespace Linklaget
 			string request = System.Text.Encoding.ASCII.GetString (buf);
 			//follow protocol
 			string send = startEnd + request.Replace ("B", "BD").Replace ("A", "BC") + startEnd;
-			Console.WriteLine($"Link laget sender {send}");
+			//Console.WriteLine($"Link laget sender {send}");
 
 			//convert back to byte[]
 			buf = System.Text.Encoding.ASCII.GetBytes (send);
@@ -101,7 +101,7 @@ namespace Linklaget
 
 				//convert to ascii so we can revert to normal
 				string received = System.Text.Encoding.ASCII.GetString(buf);
-				Console.WriteLine ($"Link laget modtog: {received}");
+				//Console.WriteLine ($"Link laget modtog: {received}");
 
 
 				//see that message is contained in A - A

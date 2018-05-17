@@ -143,7 +143,29 @@ namespace Transportlaget
 		/// </param>
 		public int receive (ref byte[] buf)
 		{
-			// TO DO Your own code
+			//finde ud af checksum
+			var checke = checksum.checkChecksum(buf,buf.Length);
+
+			if(checke)
+			Console.WriteLine (checke);
+
+			//sende ack eller ikke
+
+			//check what we got
+			for(int i = 0 ; i < 10 ; i++)
+			{
+				Console.WriteLine(buffer[i]);
+			}		
+
+
+
+
+
+
+
+
+			link.receive (ref buf);
+
 			return 0;
 		}
 	}
