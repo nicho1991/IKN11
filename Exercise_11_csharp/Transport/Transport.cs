@@ -77,7 +77,7 @@ namespace Transportlaget
 			int size = link.receive (ref buf);
 			if (size != (int)TransSize.ACKSIZE)
 				return DEFAULT_SEQNO;
-			if (!checksum.calcChecksum (buf, (int)TransSize.ACKSIZE) || buf [(int)TransCHKSUM.SEQNO] != seqNo || buf [(int)TransCHKSUM.TYPE] != (int)TransType.ACK)
+			if (!checksum.checkChecksum (buf, (int)TransSize.ACKSIZE) || buf [(int)TransCHKSUM.SEQNO] != seqNo || buf [(int)TransCHKSUM.TYPE] != (int)TransType.ACK)
 				return DEFAULT_SEQNO;
 			return seqNo;
 			
@@ -115,7 +115,7 @@ namespace Transportlaget
 		/// <param name='size'>
 		/// Size.
 		/// </param>
-		public void send(byte buf,int size )
+		public void send(byte[] buf,int size )
 		{
 			do
 			{
@@ -126,7 +126,7 @@ namespace Transportlaget
 					buffer[i+4] = buf[i];
 				}
 				Checksum checksum = new Checksum();
-				checksum.calcChecksum(buf,size);
+				checksum.calcChecksum(ref buffer,size);
 				link.send(buffer, size+4);
 			} while (receiveAck() != seqNo);
 			nextSeqNo(); ////////////////////////////////////// update seqNo
