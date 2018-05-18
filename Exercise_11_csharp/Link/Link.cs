@@ -126,7 +126,6 @@ namespace Linklaget
 				serialPort.Read (buf, 0, bytesToRead);
 				//if ack received
 
-
 				if (bytesToRead == 4) {
 					for(int i = 0; i< bytesToRead; i++){
 						Console.WriteLine(buf[i]);

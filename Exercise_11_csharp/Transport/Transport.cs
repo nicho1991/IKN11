@@ -1,5 +1,7 @@
 using System;
 using Linklaget;
+using System.Threading;
+
 
 /// <summary>
 /// Transport.
@@ -138,6 +140,9 @@ namespace Transportlaget
 				//}					
 
 				link.send(buffer, size + 4);
+
+				Thread.Sleep(200);
+
 			} while (receiveAck() != seqNo);
 			nextSeqNo(); ////////////////////////////////////// update seqNo
 			old_seqNo = DEFAULT_SEQNO;
