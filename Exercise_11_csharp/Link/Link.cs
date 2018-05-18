@@ -105,7 +105,6 @@ namespace Linklaget
 
 			//if ack
 			if (size == 4) {
-				Console.WriteLine ("ttt");
 				serialPort.Write (buf, 0, size);
 
 			}
