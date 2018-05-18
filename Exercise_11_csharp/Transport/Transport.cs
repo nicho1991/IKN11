@@ -119,8 +119,6 @@ namespace Transportlaget
 		{
 			do
 			{
-				
-
 				buffer[2] = seqNo;
 
 				buffer[3] = 0;
@@ -134,12 +132,12 @@ namespace Transportlaget
 				checksum.calcChecksum(ref buffer,size);
 
 				//check what we got
-				for(int i = 0 ; i < 10 ; i++)
-				{
-					Console.WriteLine(buffer[i]);
-				}					
+				//for(int i = 0 ; i < 10 ; i++)
+				//{
+				//	Console.WriteLine(buffer[i]);
+				//}					
 
-				link.send(buffer, size+4);
+				link.send(buffer, size + 4);
 			} while (receiveAck() != seqNo);
 			nextSeqNo(); ////////////////////////////////////// update seqNo
 			old_seqNo = DEFAULT_SEQNO;
@@ -170,11 +168,11 @@ namespace Transportlaget
 				//sende ack eller ikke
 
 				//check what we got
-				Console.WriteLine("something");
-				for(int i = 0 ; i < 10 ; i++)
-				{
-					Console.WriteLine(buf[i]);
-				}		
+				//Console.WriteLine("something");
+				//for(int i = 0 ; i < 10 ; i++)
+				//{
+				//	Console.WriteLine(buf[i]);
+				//}		
 			}
 
 

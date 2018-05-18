@@ -64,11 +64,11 @@ namespace Linklaget
 
 			}
 			//check what we got
-			Console.WriteLine ("Link");
-			for(int i = 0 ; i < size ; i++)
-			{
-				Console.WriteLine(buf[i]);
-			}	
+			//Console.WriteLine ("Link");
+			//for(int i = 0 ; i < size ; i++)
+			//{
+			//	Console.WriteLine(buf[i]);
+			//}	
 
 
 			char startEnd = 'A';
@@ -83,31 +83,23 @@ namespace Linklaget
 
 			string request = System.Text.Encoding.ASCII.GetString (tempBuf);
 
-
-
-
-
-			//follow protocol
-
-
-
 			string send = startEnd + request.Replace ("B", "BD").Replace ("A", "BC") + startEnd;
-			//Console.WriteLine($"Link laget sender {send}");
+		
 
+			tempBuf = System.Text.Encoding.ASCII.GetBytes (send);
 
-			var senderByteArray = new byte[size];
+			var senderByteArray = new byte[send.Length+4];
 			//put in the checksum etc
 			for (int i = 0; i < 4; i++) {
 				senderByteArray [i] = buf[i];
 			}
 			//put in data
-			for(int i = 4; i < size;i++ ){
-				senderByteArray [i] = tempBuf [i - 4];
+			for(int i = 4; i < tempBuf.Length +4 ;i++ ){
+				senderByteArray [i] = tempBuf [i - 4] ;
 			}
 
 
 			//send the message
-
 			serialPort.Write (senderByteArray, 0, senderByteArray.Length);
 
 		}
@@ -132,28 +124,46 @@ namespace Linklaget
 			//check if there is something to read
 			if(bytesToRead > 0){
 				serialPort.Read (buf, 0, bytesToRead);
-
-				//convert to ascii so we can revert to normal
-				string received = System.Text.Encoding.ASCII.GetString(buf);
-				//Console.WriteLine ($"Link laget modtog: {received}");
+				//if ack received
 
 
-				//see that message is contained in A - A
-				if(received.StartsWith("A") && received.EndsWith("A"))
-				{
-				//remove Start and end
-				string normal = received.Replace("A","");
-				normal = normal.Replace("BD","B").Replace("BC","A");
-				//convert to byte[] and set buf
-				buf = System.Text.Encoding.ASCII.GetBytes(normal);
-				return buf.Length;
+				if (bytesToRead == 4) {
+					for(int i = 0; i< bytesToRead; i++){
+						Console.WriteLine(buf[i]);
+					}
+					return bytesToRead;
+				}
+
+
+				//if data received
+				if(bytesToRead > 4){
+					//split up so we dont look at transport
+					byte[] Linkbuf = new byte[buf.Length];
+
+					for (int i = 4; i < bytesToRead; i++) 
+						{
+							Linkbuf [i - 4] = buf [i];
+						}
+					//convert to ascii so we can revert to normal
+					string received = System.Text.Encoding.ASCII.GetString(Linkbuf);
+					Console.WriteLine ($"Link laget modtog: {received}");
+
+
+					//see that message is contained in A - A
+					if(received.StartsWith("A") && received.EndsWith("A"))
+					{
+						//remove Start and end
+						string normal = received.Replace("A","");
+						normal = normal.Replace("BD","B").Replace("BC","A");
+						//convert to byte[] and set buf
+						buf = System.Text.Encoding.ASCII.GetBytes(normal);
+						return buf.Length;
+					}
 				}
 				return 0;
 			}
 
 			return 0;
-
-
 		}
 	}
 }
