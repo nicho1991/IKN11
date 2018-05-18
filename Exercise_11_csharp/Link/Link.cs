@@ -63,18 +63,52 @@ namespace Linklaget
 				serialPort.Write (buf, 0, size);
 
 			}
+			//check what we got
+			Console.WriteLine ("Link");
+			for(int i = 0 ; i < size ; i++)
+			{
+				Console.WriteLine(buf[i]);
+			}	
+
+
 			char startEnd = 'A';
 			//convert to string so we can manipulate
-			string request = System.Text.Encoding.ASCII.GetString (buf);
+
+			//temp buff to avoid transport layer
+			var tempBuf = new byte[size-4];
+			for (int i = 4; i < size; i++) {
+				tempBuf [i - 4] = buf [i];
+			}
+
+
+			string request = System.Text.Encoding.ASCII.GetString (tempBuf);
+
+
+
+
+
 			//follow protocol
+
+
+
 			string send = startEnd + request.Replace ("B", "BD").Replace ("A", "BC") + startEnd;
 			//Console.WriteLine($"Link laget sender {send}");
 
-			//convert back to byte[]
-			buf = System.Text.Encoding.ASCII.GetBytes (send);
+
+			var senderByteArray = new byte[size];
+			//put in the checksum etc
+			for (int i = 0; i < 4; i++) {
+				senderByteArray [i] = buf[i];
+			}
+			//put in data
+			for(int i = 4; i < size;i++ ){
+				senderByteArray [i] = tempBuf [i - 4];
+			}
+
+
 			//send the message
 
-			serialPort.Write (buf, 0, buf.Length);
+			serialPort.Write (senderByteArray, 0, senderByteArray.Length);
 
 		}
 
