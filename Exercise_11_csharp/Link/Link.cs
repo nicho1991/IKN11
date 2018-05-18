@@ -60,7 +60,7 @@ namespace Linklaget
 			if (!serialPort.IsOpen) {
 				return;
 
-				serialPort.Write (buf, 0, size);
+
 
 			}
 			//check what we got
@@ -70,38 +70,45 @@ namespace Linklaget
 			//	Console.WriteLine(buf[i]);
 			//}	
 
+			//if data
+			if (size > 4) {
+				char startEnd = 'A';
+				//convert to string so we can manipulate
 
-			char startEnd = 'A';
-			//convert to string so we can manipulate
-
-			//temp buff to avoid transport layer
-			var tempBuf = new byte[size-4];
-			for (int i = 4; i < size; i++) {
-				tempBuf [i - 4] = buf [i];
-			}
+				//temp buff to avoid transport layer
+				var tempBuf = new byte[size - 4];
+				for (int i = 4; i < size; i++) {
+					tempBuf [i - 4] = buf [i];
+				}
 
 
-			string request = System.Text.Encoding.ASCII.GetString (tempBuf);
+				string request = System.Text.Encoding.ASCII.GetString (tempBuf);
 
-			string send = startEnd + request.Replace ("B", "BD").Replace ("A", "BC") + startEnd;
+				string send = startEnd + request.Replace ("B", "BD").Replace ("A", "BC") + startEnd;
 		
 
-			tempBuf = System.Text.Encoding.ASCII.GetBytes (send);
+				tempBuf = System.Text.Encoding.ASCII.GetBytes (send);
 
-			var senderByteArray = new byte[send.Length+4];
-			//put in the checksum etc
-			for (int i = 0; i < 4; i++) {
-				senderByteArray [i] = buf[i];
+				var senderByteArray = new byte[send.Length + 4];
+				//put in the checksum etc
+				for (int i = 0; i < 4; i++) {
+					senderByteArray [i] = buf [i];
+				}
+				//put in data
+				for (int i = 4; i < tempBuf.Length + 4; i++) {
+					senderByteArray [i] = tempBuf [i - 4];
+				}
+				//send the message
+				serialPort.Write (senderByteArray, 0, senderByteArray.Length);
+
 			}
-			//put in data
-			for(int i = 4; i < tempBuf.Length +4 ;i++ ){
-				senderByteArray [i] = tempBuf [i - 4] ;
+
+			//if ack
+			if (size == 4) {
+				Console.WriteLine ("ttt");
+				serialPort.Write (buf, 0, size);
+
 			}
-
-
-			//send the message
-			serialPort.Write (senderByteArray, 0, senderByteArray.Length);
-
 		}
 
 		/// <summary>
