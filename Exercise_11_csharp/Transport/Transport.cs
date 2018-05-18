@@ -155,35 +155,33 @@ namespace Transportlaget
 		/// </param>
 		public int receive (ref byte[] buf)
 		{
-			//finde ud af checksum
-<<<<<<< HEAD
-			var checke = checksum.checkChecksum(buf,buf.Length);
+			//check if theres something to receive.
+			if (link.receive(ref buf) > 0){
+				//finde ud af checksum
 
-			if(checke)
-			Console.WriteLine (checke);
+				sendAck (true);		
+
+
+				var checke = checksum.checkChecksum(buf,buf.Length);
+
+				if(checke)
+					Console.WriteLine (checke);
+
+				//sende ack eller ikke
+
+				//check what we got
+				Console.WriteLine("something");
+				for(int i = 0 ; i < 10 ; i++)
+				{
+					Console.WriteLine(buf[i]);
+				}		
+			}
+
+
+
 
 			//sende ack eller ikke
 
-			//check what we got
-			for(int i = 0 ; i < 10 ; i++)
-			{
-				Console.WriteLine(buffer[i]);
-			}		
-
-
-
-=======
-
-
-
-			//sende ack eller ikke
->>>>>>> ce967293e3879600a685ae36d3f51cad642037dd
-
-
-
-
-
-			link.receive (ref buf);
 
 			return 0;
 		}
