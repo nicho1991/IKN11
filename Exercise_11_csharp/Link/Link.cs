@@ -143,7 +143,7 @@ namespace Linklaget
 				//if data received
 				if(bytesToRead > 4){
 					//split up so we dont look at transport
-					byte[] Linkbuf = new byte[buf.Length];
+					byte[] Linkbuf = new byte[bytesToRead-4];
 
 					for (int i = 4; i < bytesToRead; i++) 
 						{
