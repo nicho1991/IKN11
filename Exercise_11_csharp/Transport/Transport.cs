@@ -141,7 +141,7 @@ namespace Transportlaget
 				//Console.WriteLine(buffer.Length);
 				link.send(buffer, size +4 );
 
-				Thread.Sleep(25);
+				Thread.Sleep(250);
 
 
 			} while (receiveAck() != seqNo);
