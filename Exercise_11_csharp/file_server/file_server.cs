@@ -38,7 +38,12 @@ namespace Application
 					//this must be a filename!
 					Console.WriteLine($"After link layer server got filename: {received}");
 
+					//find the file
+					Console.WriteLine(LIB.check_File_Exists(received));
+
 					//send the file
+
+
 				} 
 				else {
 					
