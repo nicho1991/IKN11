@@ -131,7 +131,7 @@ namespace Transportlaget
 				}
 
 				Checksum checksum = new Checksum();
-				checksum.calcChecksum(ref buffer,size);
+				checksum.calcChecksum(ref buffer,buffer.Length);
 
 				//check what we got
 				//for(int i = 0 ; i < 10 ; i++)

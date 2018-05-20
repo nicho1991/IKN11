@@ -4,6 +4,7 @@ using System.Text;
 using Transportlaget;
 using Library;
 using Linklaget;
+using System.Threading;
 
 namespace Application
 {
@@ -39,12 +40,19 @@ namespace Application
 					Console.WriteLine($"After link layer server got filename: {received}");
 
 					//find the file
-					Console.WriteLine(LIB.check_File_Exists(received));
-
-					//send the file
+					long filesize = LIB.check_File_Exists(received);
 
 
-				} 
+					Thread.Sleep (100);
+					if (filesize != 0) {
+						//send the file
+						sendFile(received,filesize,transport);
+					}
+
+
+
+
+				}
 				else {
 					
 				}
@@ -103,10 +111,20 @@ namespace Application
 		/// </param>
 		private void sendFile(String fileName, long fileSize, Transport transport)
 		{
-			// TO DO Your own code
-			/*//send filstørelse
-			tcp.LIB.writeTextTCP(io,fileSize.ToString());
 
+			//send the size
+			string filesizestring = fileSize.ToString();
+
+
+
+			byte[] filesizebuf = new byte[BUFSIZE];
+
+			filesizebuf = Encoding.ASCII.GetBytes (filesizestring);
+			//send it
+			transport.send (filesizebuf, filesizebuf.Length);
+
+
+			//get file
 			FileStream fs = new FileStream (fileName, FileMode.Open, FileAccess.Read);
 
 			int numberOfPackages = Convert.ToInt32 (Math.Ceiling (Convert.ToDouble (fileSize) / Convert.ToDouble (BUFSIZE)));
@@ -118,7 +136,7 @@ namespace Application
 				if (totalLength > BUFSIZE) {
 					currentPacketLength = BUFSIZE;
 					totalLength -= BUFSIZE;
-	
+
 
 				} else {
 
@@ -128,11 +146,9 @@ namespace Application
 				byte[] sendingBuffer = new byte[currentPacketLength];
 
 				fs.Read (sendingBuffer, 0, (int)currentPacketLength);
-				io.Write (sendingBuffer, 0, sendingBuffer.Length);
+				transport.send(sendingBuffer, sendingBuffer.Length);
 			}
-
 			fs.Close ();
-			io.Close ();*/
 		}
 
 		/// <summary>
