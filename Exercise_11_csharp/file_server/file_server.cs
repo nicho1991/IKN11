@@ -120,8 +120,11 @@ namespace Application
 			byte[] filesizebuf = new byte[BUFSIZE];
 
 			filesizebuf = Encoding.ASCII.GetBytes (filesizestring);
+
 			//send it
+			Console.WriteLine(filesizebuf.Length);
 			transport.send (filesizebuf, filesizebuf.Length);
+
 
 
 			//get file

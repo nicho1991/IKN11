@@ -63,6 +63,7 @@ namespace Linklaget
 
 
 			}
+			serialPort.DiscardInBuffer ();
 			//check what we got
 			//Console.WriteLine ("Link");
 			//for(int i = 0 ; i < size ; i++)
@@ -108,6 +109,8 @@ namespace Linklaget
 				serialPort.Write (buf, 0, size);
 
 			}
+
+			serialPort.DiscardOutBuffer ();
 		}
 
 		/// <summary>
@@ -124,6 +127,8 @@ namespace Linklaget
 			if (!serialPort.IsOpen) {
 				return 0;
 			}
+
+			serialPort.DiscardOutBuffer ();
 			//read from the port
 			int bytesToRead = serialPort.BytesToRead;
 
@@ -136,6 +141,8 @@ namespace Linklaget
 					for(int i = 0; i< bytesToRead; i++){
 						Console.WriteLine(buf[i]);
 					}
+
+					serialPort.DiscardInBuffer ();
 					return bytesToRead;
 				}
 
@@ -162,9 +169,11 @@ namespace Linklaget
 						normal = normal.Replace("BD","B").Replace("BC","A");
 						//convert to byte[] and set buf
 						buf = System.Text.Encoding.ASCII.GetBytes(normal);
+						serialPort.DiscardInBuffer ();
 						return buf.Length;
 					}
 				}
+				serialPort.DiscardInBuffer ();
 				return 0;
 			}
 

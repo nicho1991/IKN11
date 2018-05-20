@@ -123,7 +123,7 @@ namespace Transportlaget
 			{
 				buffer[2] = seqNo;
 
-				buffer[3] = 0;
+				buffer[3] = 0; //data
 
 				for (int i = 0; i < size; i++)
 				{
@@ -138,10 +138,11 @@ namespace Transportlaget
 				//{
 				//	Console.WriteLine(buffer[i]);
 				//}					
+				//Console.WriteLine(buffer.Length);
+				link.send(buffer, size +4 );
 
-				link.send(buffer, size + 4);
+				//Thread.Sleep(10);
 
-				Thread.Sleep(50);
 
 			} while (receiveAck() != seqNo);
 			nextSeqNo(); ////////////////////////////////////// update seqNo
@@ -168,7 +169,7 @@ namespace Transportlaget
 				var checke = checksum.checkChecksum(buf,buf.Length);
 
 				if(checke)
-					Console.WriteLine (checke);
+					//Console.WriteLine (checke);
 
 
 				return buf.Length;
