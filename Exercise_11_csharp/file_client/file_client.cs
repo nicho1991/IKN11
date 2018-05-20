@@ -35,7 +35,7 @@ namespace Application
 			Linklaget.Link client = new Linklaget.Link (BUFSIZE, APP);
 			byte[] req = new byte[256];
 			//send en fil request
-			string request = "hAlloB";
+			string request = "/root/test/t.txt";
 			Console.WriteLine($"trying to send {request}");
 			req = Encoding.ASCII.GetBytes(request);
 
@@ -46,7 +46,7 @@ namespace Application
 			
 
 			//vent på at modtage fil her
-
+			receiveFile("t.txt",transport);
 
 			/*
 			System.Net.Sockets.TcpClient clientSocket = new System.Net.Sockets.TcpClient ();
@@ -75,6 +75,14 @@ namespace Application
 		/// </param>
 		private void receiveFile (String fileName, Transport transport)
 		{
+
+			byte[] filesizebyte = new byte[BUFSIZE];
+			transport.receive (ref filesizebyte);
+
+			string filesize = Encoding.ASCII.GetString (filesizebyte);
+
+			Console.WriteLine (filesize);
+
 			// TO DO Your own code
 			/*
 			 			Int64 fileSize = 0;
