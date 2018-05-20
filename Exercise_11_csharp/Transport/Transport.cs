@@ -141,7 +141,7 @@ namespace Transportlaget
 
 				link.send(buffer, size + 4);
 
-				//Thread.Sleep(200);
+				Thread.Sleep(50);
 
 			} while (receiveAck() != seqNo);
 			nextSeqNo(); ////////////////////////////////////// update seqNo
