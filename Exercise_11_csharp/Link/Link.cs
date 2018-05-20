@@ -101,6 +101,7 @@ namespace Linklaget
 				}
 				//send the message
 				serialPort.Write (senderByteArray, 0, senderByteArray.Length);
+				serialPort.DiscardOutBuffer ();
 
 			}
 

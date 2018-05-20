@@ -122,7 +122,7 @@ namespace Application
 			filesizebuf = Encoding.ASCII.GetBytes (filesizestring);
 
 			//send it
-			Console.WriteLine(filesizebuf.Length);
+			//Console.WriteLine(filesizebuf.Length);
 			transport.send (filesizebuf, filesizebuf.Length);
 
 
