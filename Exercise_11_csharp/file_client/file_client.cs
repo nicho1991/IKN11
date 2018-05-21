@@ -78,10 +78,11 @@ namespace Application
 		/// </param>
 		private void receiveFile (String fileName, Transport transport)
 		{
-			
-				byte[] filesizebyte = new byte[BUFSIZE];
-				transport.receive (ref filesizebyte);
-
+			int size = 0;
+			byte[] filesizebyte = new byte[BUFSIZE];
+			while((size = transport.receive(ref filesizebyte)) == 0){
+				Console.WriteLine("Waiting for data");
+			}
 				string filesize = Encoding.ASCII.GetString (filesizebyte);
 
 				Console.WriteLine (filesize);
