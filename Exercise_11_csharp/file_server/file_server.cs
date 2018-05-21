@@ -47,7 +47,7 @@ namespace Application
 					long filesize = LIB.check_File_Exists(received);
 
 
-					Thread.Sleep (500);
+					//Thread.Sleep (500);
 					if (filesize != 0) {
 						Console.WriteLine ("\n Sendte: " + "\n Filnavn: " + received + "\n Størrelse: " + filesize);
 						string request = "Filnavn: " + received + "Størrelse: " + filesize;
