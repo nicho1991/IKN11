@@ -28,7 +28,7 @@ namespace Application
 		/// <param name='args'>
 		/// Filnavn med evtuelle sti.
 		/// </param>
-		private file_client(String[] args)s
+		private file_client(String[] args)
 		{
 			///check for link lag
 
@@ -75,13 +75,15 @@ namespace Application
 		/// </param>
 		private void receiveFile (String fileName, Transport transport)
 		{
+			while (true) {
+				byte[] filesizebyte = new byte[BUFSIZE];
+				transport.receive (ref filesizebyte);
 
-			byte[] filesizebyte = new byte[BUFSIZE];
-			transport.receive (ref filesizebyte);
+				string filesize = Encoding.ASCII.GetString (filesizebyte);
 
-			string filesize = Encoding.ASCII.GetString (filesizebyte);
+				Console.WriteLine (filesize);
+			}
 
-			Console.WriteLine (filesize);
 
 			// TO DO Your own code
 			/*
