@@ -49,7 +49,7 @@ namespace Application
 			Console.WriteLine ("waiting to receive");
 
 			//vent på at modtage fil her
-			receiveFile("penis.txt", transport);
+			receiveFile(request, transport);
 
 			/*
 			System.Net.Sockets.TcpClient clientSocket = new System.Net.Sockets.TcpClient ();
@@ -78,14 +78,14 @@ namespace Application
 		/// </param>
 		private void receiveFile (String fileName, Transport transport)
 		{
-			while (true) {
+			
 				byte[] filesizebyte = new byte[BUFSIZE];
 				transport.receive (ref filesizebyte);
 
 				string filesize = Encoding.ASCII.GetString (filesizebyte);
 
 				Console.WriteLine (filesize);
-			}
+			
 
 
 			// TO DO Your own code
