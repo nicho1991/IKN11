@@ -42,7 +42,7 @@ namespace Application
 
 				//Console.WriteLine (buffer.Length+System.Text.Encoding.ASCII.GetString(buffer));
 				//check what we got here
-				string received = Encoding.UTF8.GetString(buffer,0,size);
+				string received = Encoding.UTF8.GetString(buffer,0,size -4 );
 				//this must be a filename!
 				//Console.WriteLine($"After link layer server got filename: {received}");
 
