@@ -61,8 +61,11 @@ namespace Application
 					//Console.WriteLine ("sender om lidt..");
 					//Thread.Sleep (1000);
 					//Console.WriteLine ("sender nu");
-					transport.send (responsebuff, responsebuff.Length);
-					Console.WriteLine ("navn sendt afsted");
+
+						transport.send (responsebuff, responsebuff.Length);
+						Console.WriteLine ("navn sendt afsted");
+					
+
 				} else {
 					Console.WriteLine ("file not found");
 				}
