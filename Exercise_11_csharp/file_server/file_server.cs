@@ -37,14 +37,16 @@ namespace Application
 
 				//receive
 				while((size = transport.receive (ref buffer)) == 0)
-				{}
-
+				{
+					Console.WriteLine ("waiting for name");
+				}
+				Console.WriteLine ("received a name");
 
 				//Console.WriteLine (buffer.Length+System.Text.Encoding.ASCII.GetString(buffer));
 				//check what we got here
 				string received = Encoding.UTF8.GetString(buffer,0,size -4 );
 				//this must be a filename!
-				//Console.WriteLine($"After link layer server got filename: {received}");
+				Console.WriteLine($"After link layer server got filename: {received}");
 
 				//find the file
 				long filesize = LIB.check_File_Exists(received);
@@ -52,7 +54,7 @@ namespace Application
 
 
 				if (filesize != 0) {
-					
+					Console.WriteLine ("found the file");
 					Console.WriteLine ("\n Sender: " + "\n Filnavn: " + received + "\n Størrelse: " + filesize);
 					string request = "Filnavn: " + received + "Størrelse: " + filesize;
 					responsebuff = Encoding.ASCII.GetBytes (request);

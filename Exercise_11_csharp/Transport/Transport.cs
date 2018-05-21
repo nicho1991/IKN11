@@ -202,6 +202,7 @@ namespace Transportlaget
 
 				} catch (TimeoutException) {
 					errorCount++;
+					Console.WriteLine ("timeout");
 					receiveSize = 0;
 				}
 			}
