@@ -122,9 +122,11 @@ namespace Transportlaget
 		/// </param>
 		public void send(byte[] buf,int size )
 		{
-			do
-			{
-				try{
+
+				try
+				{
+					do
+					{
 					buffer[2] = seqNo;
 
 					buffer[3] = 0; //data
@@ -138,14 +140,16 @@ namespace Transportlaget
 					checksum.calcChecksum(ref buffer,buffer.Length);
 
 					link.send(buffer, size +4 );
+				
+					} while (receiveAck() != seqNo);
 				}
-
 				catch(TimeoutException){
 					
 				}
 
 
-			} while (receiveAck() != seqNo);
+
+			
 			nextSeqNo(); ////////////////////////////////////// update seqNo
 			old_seqNo = DEFAULT_SEQNO;
 		}
