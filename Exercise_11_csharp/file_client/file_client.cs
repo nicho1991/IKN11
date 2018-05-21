@@ -32,7 +32,7 @@ namespace Application
 		{
 			///check for link lag
 
-			Linklaget.Link client = new Linklaget.Link (BUFSIZE, APP);
+			//Linklaget.Link client = new Linklaget.Link (BUFSIZE, APP);
 			byte[] req = new byte[256];
 			//send en fil request
 			string request = "/root/Desktop/IKN11/Exercise_11_csharp/files/penis.txt";

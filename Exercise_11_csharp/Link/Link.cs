@@ -63,7 +63,7 @@ namespace Linklaget
 
 
 			}
-			serialPort.DiscardInBuffer ();
+			//serialPort.DiscardInBuffer ();
 			//check what we got
 			//Console.WriteLine ("Link");
 			//for(int i = 0 ; i < size ; i++)
@@ -101,7 +101,7 @@ namespace Linklaget
 				}
 				//send the message
 				serialPort.Write (senderByteArray, 0, senderByteArray.Length);
-				serialPort.DiscardOutBuffer ();
+				//serialPort.DiscardOutBuffer ();
 
 			}
 
@@ -111,7 +111,7 @@ namespace Linklaget
 
 			}
 
-			serialPort.DiscardOutBuffer ();
+			//serialPort.DiscardOutBuffer ();
 		}
 
 		/// <summary>

@@ -148,7 +148,7 @@ namespace Transportlaget
 
 
 			} while (receiveAck() != seqNo);
-			nextSeqNo(); ////////////////////////////////////// update seqNo
+			nextSeqNo();
 			old_seqNo = DEFAULT_SEQNO;
 		}
 
@@ -176,7 +176,7 @@ namespace Transportlaget
 					sendAck (true);	
 				}
 				sendAck (false);
-				return buf.Length;
+				return receiveSize;
 
 				//sende ack eller ikke
 			//hej
