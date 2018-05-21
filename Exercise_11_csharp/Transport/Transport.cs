@@ -141,14 +141,12 @@ namespace Transportlaget
 					link.send(buffer, size+ 4);
 				
 					} while (receiveAck() != seqNo);
+
 				}
 				catch(TimeoutException){
 				
 				}
 
-
-
-			
 			nextSeqNo(); ////////////////////////////////////// update seqNo
 			//old_seqNo = DEFAULT_SEQNO;
 		}
@@ -174,13 +172,18 @@ namespace Transportlaget
 						if (checke) {
 							//Console.WriteLine (checke);
 							sendAck (true);	
-							//figure out size 
-							var tempbuf = buf;
+							if(buf[(int) TransCHKSUM.SEQNO] == seqNo){
+								nextSeqNo();
+								break;
+								//figure out size 
+								var tempbuf = buf;
 
-							Array.Copy(tempbuf,(int)TransSize.ACKSIZE, buf,0,receiveSize);
+								Array.Copy(tempbuf,(int)TransSize.ACKSIZE, buf,0,receiveSize);
+							}
 
-							nextSeqNo();
-							break;
+							continue;
+
+
 
 						}
 						sendAck (false);
