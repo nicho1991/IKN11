@@ -162,8 +162,15 @@ namespace Transportlaget
 		/// </param>
 		public int receive (ref byte[] buf)
 		{
+			int receiveSize = link.receive (ref buf);
+
+			while(receiveSize == 0){
+				//sendAck (false);
+				receiveSize = link.receive (ref buf);
+			}
+
 			//check if theres something to receive.
-			if (link.receive(ref buf) > 0){
+
 				//finde ud af checksum
 
 				var checke = checksum.checkChecksum(buf,buf.Length);
@@ -185,7 +192,7 @@ namespace Transportlaget
 				//{
 				//	Console.WriteLine(buf[i]);
 				//}		
-			}
+			
 
 
 
