@@ -76,10 +76,10 @@ namespace Transportlaget
 		private byte receiveAck()
 		{
 			byte[] buf = new byte[(int)TransSize.ACKSIZE];
-			int size = link.receive (ref buffer);
+			int size = link.receive (ref buf);
 			if (size != (int)TransSize.ACKSIZE)
 				return DEFAULT_SEQNO;
-			if(!checksum.checkChecksum(buffer, (int)TransSize.ACKSIZE) ||
+			if(!checksum.checkChecksum(buf, (int)TransSize.ACKSIZE) ||
 				buf[(int)TransCHKSUM.SEQNO] != seqNo ||
 				buf[(int)TransCHKSUM.TYPE] != (int)TransType.ACK)
 				return DEFAULT_SEQNO;
@@ -142,7 +142,7 @@ namespace Transportlaget
 
 						//Console.WriteLine("t");
 						link.send(buffer, size+ 4);
-						Console.WriteLine("got no ack seq is: " + seqNo );
+						//Console.WriteLine("got no ack seq is: " + seqNo );
 					} while (receiveAck() != seqNo);
 					nextSeqNo(); ////////////////////////////////////// update seqNo
 					break;
