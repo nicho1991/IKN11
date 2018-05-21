@@ -176,7 +176,9 @@ namespace Transportlaget
 							//Console.WriteLine (checke);
 							sendAck (true);	
 							//figure out size 
+							var tempbuf = buf;
 
+							Array.Copy(tempbuf,(int)TransSize.ACKSIZE, buf,0,receiveSize);
 
 							nextSeqNo();
 							break;
