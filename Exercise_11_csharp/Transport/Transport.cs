@@ -139,7 +139,7 @@ namespace Transportlaget
 					Checksum checksum = new Checksum();
 					checksum.calcChecksum(ref buffer,buffer.Length);
 
-					link.send(buffer, size +4 );
+					link.send(buffer, size);
 				
 					} while (receiveAck() != seqNo);
 				}

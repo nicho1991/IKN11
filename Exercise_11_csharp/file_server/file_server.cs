@@ -29,19 +29,20 @@ namespace Application
 			//Link link = new Link(BUFSIZE,APP);
 			Transport transport = new Transport (BUFSIZE, APP);
 			Console.WriteLine("Server started");
+			int size = 0;
 			while (true) 
 			{
 				byte[] responsebuff = new byte[BUFSIZE]; 
 				byte[] buffer = new byte[BUFSIZE];
 
 				//receive
-				while(transport.receive (ref buffer) == 0)
+				while((size = transport.receive (ref buffer)) == 0)
 				{}
 
 
 				//Console.WriteLine (buffer.Length+System.Text.Encoding.ASCII.GetString(buffer));
 				//check what we got here
-				string received = System.Text.Encoding.ASCII.GetString(buffer);
+				string received = Encoding.UTF8.GetString(buffer,0,size);
 				//this must be a filename!
 				//Console.WriteLine($"After link layer server got filename: {received}");
 
