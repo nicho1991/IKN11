@@ -3,92 +3,174 @@ using System.IO;
 using System.Text;
 using Transportlaget;
 using Library;
+using Linklaget;
+using System.Threading;
 
 namespace Application
 {
 	class file_server
 	{
-
-
-
+		/// <summary>
+		/// The BUFSIZE
+		/// </summary>
 		private const int BUFSIZE = 1000;
 		private const string APP = "FILE_SERVER";
 
+		/*		
+		IPAddress localAddr = IPAddress.Parse("10.0.0.1");
+		byte[] buff = new byte[BUFSIZE];
+		*/
 
-		public static void Main (string[] args)
-		{
-			Console.WriteLine (APP);
-			file_server server = new file_server ();
-		}
-
-		//server
+		/// <summary>
+		/// Initializes a new instance of the <see cref="file_server"/> class.
+		/// </summary>
 		private file_server ()
 		{
+			//Link link = new Link(BUFSIZE,APP);
+			Transport transport = new Transport (BUFSIZE, APP);
+			Console.WriteLine("Server started");
+			while (true) 
+			{
+				byte[] responsebuff = new byte[BUFSIZE]; 
+				byte[] buffer = new byte[BUFSIZE];
+				
+				if (transport.receive (ref buffer) > 0) { 
 
-			//create transport
-			Transport transport = new Transport (BUFSIZE,APP);
-			byte[] buffer = new byte[BUFSIZE];
-			int size = 0;
-			while (true) {
-
-				while((size = transport.receive(ref buffer)) == 0)
-				{};
+					Console.WriteLine (buffer.Length+System.Text.Encoding.ASCII.GetString(buffer));
+					//check what we got here
+					string received = System.Text.Encoding.ASCII.GetString(buffer);
+					//this must be a filename!
+					Console.WriteLine($"After link layer server got filename: {received}");
 
 
-				if (size != 0) {
-					string filePath = Encoding.UTF8.GetString (buffer, 0, size);
+					//find the file
+					long filesize = LIB.check_File_Exists(received);
 
-					string tmp = Path.GetFullPath ("/root/Desktop/IKN11/Exercise_11_csharp/files/"+filePath);
-					sendFile (tmp,transport);
 
-				}
-				transport = new Transport (BUFSIZE,APP);
-			}
-		}
+					Thread.Sleep (500);
+					if (filesize != 0) {
+						Console.WriteLine ("\n Sendte: " + "\n Filnavn: " + received + "\n Størrelse: " + filesize);
+						string request = "Filnavn: " + received + "Størrelse: " + filesize;
+						responsebuff = Encoding.ASCII.GetBytes(request);
+						transport.send (responsebuff, responsebuff.Length);
 
-		//sendfile
-		private void sendFile(string filePath, Transport transport)
-		{
-
-			var size = (int)LIB.check_File_Exists (@filePath);
-			var response = Encoding.UTF8.GetBytes (size.ToString());
-			//transport.send (response,response.Length);
-
-			if (size != 0) {
-
-				Console.WriteLine ("File length:"+response.Length+ "File path" + @filePath);
-
-				var buf= new byte[BUFSIZE];
-				var bytes = 0;
-
-				using (var fs = File.Open (@filePath, FileMode.Open)) {
-
-					while ((bytes = fileStream (fs, ref buf)) != 0) {
-						transport.send (buf, bytes);
 					}
 
-				}
-				Console.WriteLine ("File was sent");
 
-			} else {
-				Console.WriteLine ("File does not exist!");
+
+
+				}
+				else {
+					
+				}
 			}
+
+
+
+			/*
+			while (true) {
+				//wait for client
+				clientSocket = serverSocket.AcceptTcpClient ();
+				Console.WriteLine ("client connected");
+
+				//opretter en stream fra client
+				NetworkStream serverStreamIO = clientSocket.GetStream (); 
+				Console.WriteLine (" >> Accepted connection from client");
+
+				//modtager filnavn
+				string fileDir; //= @"/root/Desktop/IKNServerClientTCP/Exercise_6_server/file_server/bin/Debug/files/";
+				string userfile = tcp.LIB.readTextTCP (serverStreamIO);
+
+				fileDir = userfile;
+				//check for exsitens af fil
+				long lengthOfFile = tcp.LIB.check_File_Exists (fileDir);
+
+				if (lengthOfFile != 0) {//filen findes
+					Console.WriteLine ("filen findes " + fileDir);
+					//find størrelsen på filen
+					//long filesize = new System.IO.FileInfo (fileDir).Length;
+					long filesize = LIB.check_File_Exists(fileDir);
+					//send the file
+					sendFile (fileDir, filesize, serverStreamIO);
+				} else { //filen exsitere ikke
+					Console.WriteLine ("Filen findes ikke " + fileDir);
+					tcp.LIB.writeTextTCP (serverStreamIO, "filen findes ikke");
+				}
+				//clientSocket.Close ();
+			}
+
+
+			serverSocket.Stop();
+			*/
 		}
 
-
-
-		private int fileStream(FileStream fs, ref byte[] bytes)
+		/// <summary>
+		/// Sends the file.
+		/// </summary>
+		/// <param name='fileName'>
+		/// File name.
+		/// </param>
+		/// <param name='fileSize'>
+		/// File size.
+		/// </param>
+		/// <param name='tl'>
+		/// Tl.
+		/// </param>
+		private void sendFile(String fileName, long fileSize, Transport transport)
 		{
-			int i = 0;
-			while (i < bytes.Length) {
-				int bytesRead = fs.Read (bytes, i, bytes.Length - i);
-				if (bytesRead == 0) {
-					break;
+
+			//send the size
+			string filesizestring = fileSize.ToString();
+
+
+
+			byte[] filesizebuf = new byte[BUFSIZE];
+
+			filesizebuf = Encoding.ASCII.GetBytes (filesizestring);
+
+			//send it
+			//Console.WriteLine(filesizebuf.Length);
+			transport.send (filesizebuf, filesizebuf.Length);
+
+
+
+			//get file
+			FileStream fs = new FileStream (fileName, FileMode.Open, FileAccess.Read);
+
+			int numberOfPackages = Convert.ToInt32 (Math.Ceiling (Convert.ToDouble (fileSize) / Convert.ToDouble (BUFSIZE)));
+			long currentPacketLength = 0;
+			long totalLength = fileSize;
+
+			//write out
+			for (int i = 0; i < numberOfPackages; i++) {
+				if (totalLength > BUFSIZE) {
+					currentPacketLength = BUFSIZE;
+					totalLength -= BUFSIZE;
+
+
+				} else {
+
+					currentPacketLength = totalLength;
 				}
-				i += bytesRead;
+
+				byte[] sendingBuffer = new byte[currentPacketLength];
+
+				fs.Read (sendingBuffer, 0, (int)currentPacketLength);
+				transport.send(sendingBuffer, sendingBuffer.Length);
 			}
-			return i;
+			fs.Close ();
 		}
-			
+
+		/// <summary>
+		/// The entry point of the program, where the program control starts and ends.
+		/// </summary>
+		/// <param name='args'>
+		/// The command-line arguments.
+		/// </param>
+		public static void Main (string[] args)
+		{
+			Console.WriteLine ("Server starts...");
+			file_server x = new file_server();
+		}
 	}
 }

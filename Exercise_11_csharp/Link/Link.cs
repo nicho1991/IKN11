@@ -1,9 +1,5 @@
 using System;
 using System.IO.Ports;
-using System.Text;
-
-using System.Collections.Generic;
-
 
 /// <summary>
 /// Link.
@@ -34,18 +30,9 @@ namespace Linklaget
 		public Link (int BUFSIZE, string APP)
 		{
 			// Create a new SerialPort object with default settings.
-			/*			#if DEBUG
-				if(APP.Equals("FILE_SERVER"))
-				{
-					serialPort = new SerialPort("/dev/ttySn0",115200,Parity.None,8,StopBits.One);
-				}
-				else
-				{
-					serialPort = new SerialPort("/dev/ttySn1",115200,Parity.None,8,StopBits.One);
-				}
-			#else
-*/				serialPort = new SerialPort("/dev/ttyS1",115200,Parity.None,8,StopBits.One);
-			//			#endif
+			serialPort = new SerialPort("/dev/ttyS1",115200,Parity.None,8,StopBits.One);
+
+
 			if(!serialPort.IsOpen)
 				serialPort.Open();
 
@@ -56,6 +43,7 @@ namespace Linklaget
 
 			serialPort.DiscardInBuffer ();
 			serialPort.DiscardOutBuffer ();
+
 		}
 
 		/// <summary>
@@ -69,41 +57,61 @@ namespace Linklaget
 		/// </param>
 		public void send (byte[] buf, int size)
 		{
-			var i = 0;
-			// start framing
-			var tempList = new List<byte>(1)
-			{
-				DELIMITER 
-			};
+			if (!serialPort.IsOpen) {
+				return;
 
-			for (; i < size;) {
-				switch (buf [i]) {
-				case DELIMITER:
-					tempList.Add ((byte)'B');
-					tempList.Add ((byte)'C');
-					break;
 
-				case (byte)'B':
-					tempList.Add ((byte)'B');
-					tempList.Add ((byte)'D');
-					break;
 
-				default:
-					tempList.Add (buf [i]);
-					break;
+			}
+			serialPort.DiscardInBuffer ();
+			//check what we got
+			//Console.WriteLine ("Link");
+			//for(int i = 0 ; i < size ; i++)
+			//{
+			//	Console.WriteLine(buf[i]);
+			//}	
+
+			//if data
+			if (size > 4) {
+				char startEnd = 'A';
+				//convert to string so we can manipulate
+
+				//temp buff to avoid transport layer
+				var tempBuf = new byte[size - 4];
+				for (int i = 4; i < size; i++) {
+					tempBuf [i - 4] = buf [i];
 				}
-				++i;
+
+
+				string request = System.Text.Encoding.ASCII.GetString (tempBuf);
+
+				string send = startEnd + request.Replace ("B", "BD").Replace ("A", "BC") + startEnd;
+
+
+				tempBuf = System.Text.Encoding.ASCII.GetBytes (send);
+
+				var senderByteArray = new byte[send.Length + 4];
+				//put in the checksum etc
+				for (int i = 0; i < 4; i++) {
+					senderByteArray [i] = buf [i];
+				}
+				//put in data
+				for (int i = 4; i < tempBuf.Length + 4; i++) {
+					senderByteArray [i] = tempBuf [i - 4];
+				}
+				//send the message
+				serialPort.Write (senderByteArray, 0, senderByteArray.Length);
+				serialPort.DiscardOutBuffer ();
+
 			}
 
-			// End Frame
-			tempList.Add(DELIMITER);
-			int tempListsize = tempList.Count;
-			buf = tempList.ToArray ();
+			//if ack
+			if (size == 4) {
+				serialPort.Write (buf, 0, size);
 
-			// Write to serialport
-			string wuhu = Encoding.ASCII.GetString(buf);
-			//Console.WriteLine (wuhu);
-			serialPort.Write(buf, 0, tempListsize);
+			}
+
+			serialPort.DiscardOutBuffer ();
 		}
 
 		/// <summary>
@@ -117,42 +125,59 @@ namespace Linklaget
 		/// </param>
 		public int receive (ref byte[] buf)
 		{
-			// TO DO Your own code
-			var i = 0;
-			//Does not read bytes unless it begins with delimiter - 'A'
-			while (true) {
-				if (serialPort.ReadByte() == DELIMITER)
-					break;
+			if (!serialPort.IsOpen) {
+				return 0;
 			}
 
-			var tempByte = (byte)serialPort.ReadByte();
 
-			//Console.WriteLine (tempString);
-			while (tempByte != DELIMITER)
-			{
-				if (tempByte == (byte)'B')
-				{
-					var newByte = serialPort.ReadByte();
+			//read from the port
+			int bytesToRead = serialPort.BytesToRead;
 
-					switch (newByte)
+			//check if there is something to read
+			if(bytesToRead > 0){
+				serialPort.Read (buf, 0, bytesToRead);
+				//if ack received
+
+				if (bytesToRead == 4) {
+					for(int i = 0; i< bytesToRead; i++){
+						Console.WriteLine(buf[i]);
+					}
+
+					return bytesToRead;
+				}
+
+
+				//if data received
+				if(bytesToRead > 4){
+					//split up so we dont look at transport
+					byte[] Linkbuf = new byte[bytesToRead-4];
+
+					for (int i = 4; i < bytesToRead; i++) 
 					{
-					case (byte)'C':
-						buf[i++] = (byte)'A';
-						break;
-					case (byte)'D':
-						buf[i++] = (byte)'B';
-						break;
-					default:
-						//return 0;
-						break;
+						Linkbuf [i - 4] = buf [i];
+					}
+					//convert to ascii so we can revert to normal
+					string received = System.Text.Encoding.ASCII.GetString(Linkbuf);
+					Console.WriteLine ($"Link laget modtog: {received}");
+
+
+					//see that message is contained in A - A
+					if(received.StartsWith("A") && received.EndsWith("A"))
+					{
+						//remove Start and end
+						string normal = received.Replace("A","");
+						normal = normal.Replace("BD","B").Replace("BC","A");
+						//convert to byte[] and set buf
+						buf = System.Text.Encoding.ASCII.GetBytes(normal);
+
+						return buf.Length;
 					}
 				}
-				else
-					buf[i++] = tempByte;
 
-				tempByte = (byte)serialPort.ReadByte();
+				return 0;
 			}
-			return i;
+
+			return 0;
 		}
 	}
 }
