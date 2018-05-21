@@ -28,8 +28,8 @@ namespace Application
 		/// <param name='args'>
 		/// Filnavn med evtuelle sti.
 		/// </param>
-	    private file_client(String[] args)
-	    {
+		private file_client(String[] args)s
+		{
 			///check for link lag
 
 			Linklaget.Link client = new Linklaget.Link (BUFSIZE, APP);
@@ -43,7 +43,7 @@ namespace Application
 			Transportlaget.Transport transport = new Transportlaget.Transport(BUFSIZE,APP);
 			transport.send (req, req.Length);
 
-			
+
 
 			//vent på at modtage fil her
 			receiveFile("penis.txt", new Transport(BUFSIZE, APP));
@@ -62,7 +62,7 @@ namespace Application
 			Console.WriteLine ("made networkstream");
 			receiveFile (args[1].ToString(), serverstreamIO);
 			*/
-	    }
+		}
 
 		/// <summary>
 		/// Receives the file.
