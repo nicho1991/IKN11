@@ -183,9 +183,9 @@ namespace Transportlaget
 							//Thread.Sleep(520);
 							Console.WriteLine("sending ack "+ "ack is "+ seqNo);
 
+							sendAck (true);
 							if(buf[(int) TransCHKSUM.SEQNO] == seqNo){
-
-								sendAck (true);	
+	
 								nextSeqNo();
 
 								//figure out size 
