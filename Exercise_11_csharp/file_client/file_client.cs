@@ -20,22 +20,23 @@ namespace Application
 		public static void Main (string[] args)
 		{
 			Console.WriteLine (APP);
-			file_client client = new file_client (args);
+			string path = Console.ReadLine ();
+			file_client client = new file_client (path);
 
 		}
 
 
 		//client
-		private file_client(string[] args)
+		private file_client(string path)
 		{
-			if (args.Length == 1) {
-				Transport transport = new Transport (BUFSIZE);
+			if (path.Length > 1) {
+				Transport transport = new Transport (BUFSIZE,APP);
 				byte[] buffer = new byte[BUFSIZE];
-				string filePath = args [0];
+				string filePath = path;
 				Console.WriteLine ("Requesting file: " + filePath);
 
-				transport.Send (Encoding.UTF8.GetBytes (filePath), filePath.Length);
-				int size = transport.Receive(ref buffer);
+				transport.send (Encoding.UTF8.GetBytes (filePath), filePath.Length);
+				int size = transport.receive(ref buffer);
 				int fsize = 0;
 				if (fsize != 0) {
 					fsize = int.Parse (Encoding.UTF8.GetString (buffer, 0, size));
@@ -48,7 +49,7 @@ namespace Application
 					Console.WriteLine ("The file does not exist!");
 			}
 			else
-				Console.WriteLine ("Invalid arguments!", args.Length);
+				Console.WriteLine ("Invalid arguments!", path.Length);
 		}
 
 		//receive
@@ -63,7 +64,7 @@ namespace Application
 			Console.WriteLine ("Waiting for transfer to complete...");
 
 			FileStream fs = new FileStream (fileName, FileMode.Create, FileAccess.Write);
-			while(read < fileSize && (readSize = transport.Receive(ref fileBuffer)) > 0)
+			while(read < fileSize && (readSize = transport.receive(ref fileBuffer)) > 0)
 			{
 				fs.Write (fileBuffer, 0, readSize);
 				read += readSize;
