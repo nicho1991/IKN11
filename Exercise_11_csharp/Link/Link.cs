@@ -139,9 +139,9 @@ namespace Linklaget
 				//if ack received
 
 				if (bytesToRead == 4) {
-					for(int i = 0; i< bytesToRead; i++){
-						Console.WriteLine(buf[i]);
-					}
+					//for(int i = 0; i< bytesToRead; i++){
+					//	Console.WriteLine(buf[i]);
+					//}
 
 					return bytesToRead;
 				}
