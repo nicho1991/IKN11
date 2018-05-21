@@ -133,23 +133,27 @@ namespace Transportlaget
 
 
 			checksum.calcChecksum(ref buffer,buffer.Length);
-
+			while (errorCount < 5) 
+			{
 				try
 				{
 					do
 					{
-					//Console.WriteLine("t");
-					link.send(buffer, size+ 4);
-				
+
+						//Console.WriteLine("t");
+						link.send(buffer, size+ 4);
+
 					} while (receiveAck() != seqNo);
 
 				}
 				catch(TimeoutException){
-				
+					errorCount++;
 				}
 
-			nextSeqNo(); ////////////////////////////////////// update seqNo
-			old_seqNo = DEFAULT_SEQNO;
+				nextSeqNo(); ////////////////////////////////////// update seqNo
+				old_seqNo = DEFAULT_SEQNO;
+			}
+			errorCount = 0;
 		}
 
 
@@ -164,7 +168,7 @@ namespace Transportlaget
 		{
 			int receiveSize = 0;
 			//check if theres something to receive.
-			while (receiveSize == 0) 
+			while (receiveSize == 0 && errorCount < 5) 
 			{				
 				try {
 					while(( receiveSize = link.receive(ref buf)) > 0)
@@ -196,10 +200,11 @@ namespace Transportlaget
 					}
 
 				} catch (TimeoutException) {
+					errorCount++;
 					receiveSize = 0;
 				}
 			}
-
+			errorCount = 0;
 			return receiveSize;
 		}
 	}
