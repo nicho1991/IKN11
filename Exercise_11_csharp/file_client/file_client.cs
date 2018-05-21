@@ -10,11 +10,40 @@ namespace Application
 	class file_client
 	{
 
+<<<<<<< HEAD
+=======
+		/// <summary>
+		/// Initializes a new instance of the <see cref="file_client"/> class.
+		/// 
+		/// file_client metoden opretter en peer-to-peer forbindelse
+		/// Sender en forspÃ¸rgsel for en bestemt fil om denne findes pÃ¥ serveren
+		/// Modtager filen hvis denne findes eller en besked om at den ikke findes (jvf. protokol beskrivelse)
+		/// Lukker alle streams og den modtagede fil
+		/// Udskriver en fejl-meddelelse hvis ikke antal argumenter er rigtige
+		/// </summary>
+		/// <param name='args'>
+		/// Filnavn med evtuelle sti.
+		/// </param>
+	    private file_client(String[] args)
+	    {
+			///check for link lag
+
+			Linklaget.Link client = new Linklaget.Link (BUFSIZE, APP);
+			byte[] req = new byte[256];
+			//send en fil request
+			string request = "/root/Desktop/IKN11/Exercise_11_csharp/files/penis.txt";
+			Console.WriteLine($"trying to send {request}");
+			req = Encoding.ASCII.GetBytes(request);
+>>>>>>> parent of d47112f... hjej
 
 
+<<<<<<< HEAD
 		private const int BUFSIZE = 1000;
 		private const string APP = "FILE_CLIENT";
 
+=======
+			
+>>>>>>> parent of d47112f... hjej
 
 		//main
 		public static void Main (string[] args)
@@ -27,6 +56,7 @@ namespace Application
 		}
 
 
+<<<<<<< HEAD
 		//client
 		private file_client(string path)
 		{
@@ -52,6 +82,14 @@ namespace Application
 			else
 				Console.WriteLine ("Invalid arguments!", path.Length);
 		}
+=======
+			//find networkstream
+			NetworkStream serverstreamIO = clientSocket.GetStream ();
+			Console.WriteLine ("made networkstream");
+			receiveFile (args[1].ToString(), serverstreamIO);
+			*/
+	    }
+>>>>>>> parent of d47112f... hjej
 
 		//receive
 		private void receiveFile (String path, long fileSize,Transport transport)
