@@ -122,34 +122,34 @@ namespace Transportlaget
 		/// </param>
 		public void send(byte[] buf,int size )
 		{
-			do
+
+			buffer[(int)TransCHKSUM.SEQNO] = seqNo;
+			buffer[(int)TransCHKSUM.TYPE] = (int)TransType.DATA;
+			for (var i = 0; i < size; i++)
 			{
-				buffer[2] = seqNo;
+				buffer[i + (int)TransSize.ACKSIZE] = buf[i];
+			}
+			size = size + (int)TransSize.ACKSIZE;
+			checksum.calcChecksum(ref buffer, size);
 
-				buffer[3] = 0; //data
-
-				for (int i = 0; i < size; i++)
+			while (errorCount < 5)
+			{
+				try
 				{
-					buffer[i+4] = buf[i];
+					do
+					{
+						link.send(buffer, size);
+					} while (receiveAck() != seqNo);
+					nextSeqNo();
+					break;
 				}
+				catch (TimeoutException)
+				{
+					errorCount++;
+				}
+			}
 
-				Checksum checksum = new Checksum();
-				checksum.calcChecksum(ref buffer,buffer.Length);
-
-				//check what we got
-				//for(int i = 0 ; i < 10 ; i++)
-				//{
-				//	Console.WriteLine(buffer[i]);
-				//}					
-				//Console.WriteLine(buffer.Length);
-				link.send(buffer, size +4 );
-
-				//Thread.Sleep(250);
-
-
-			} while (receiveAck() != seqNo);
-			nextSeqNo(); ////////////////////////////////////// update seqNo
-			old_seqNo = DEFAULT_SEQNO;
+			errorCount = 0;		
 		}
 
 
@@ -162,45 +162,49 @@ namespace Transportlaget
 		/// </param>
 		public int receive (ref byte[] buf)
 		{
-			int receiveSize = link.receive (ref buf);
+			int resceiveSize = 0;
 
-			while(receiveSize == 0){
-				//sendAck (false);
-				receiveSize = link.receive (ref buf);
-			}
+			while (resceiveSize == 0 && errorCount < 5)  // nothing here
+			{
+				try// timeout will break this
+				{
+					while ((resceiveSize = link.receive(ref buffer)) > 0)
+					{
+						if (checksum.checkChecksum(buffer, resceiveSize))
+						{
+							sendAck(true);
+							if (buffer[(int) TransCHKSUM.SEQNO] == seqNo)
+							{
+								nextSeqNo();
+								if(buf.Length < resceiveSize - (int) TransSize.ACKSIZE)
+									resceiveSize = buf.Length;
+								else{resceiveSize = resceiveSize -(int)TransSize.ACKSIZE;}
+							
 
-			//check if theres something to receive.
+								Array.Copy(buffer, (int)TransSize.ACKSIZE, buf, 0, resceiveSize);
 
-				//finde ud af checksum
+								break;
+							}
+							else{
+								continue;
+							}
+						}
 
-				var checke = checksum.checkChecksum(buf,buf.Length);
-
-				if (checke) {
-					Console.WriteLine (checke);
-					sendAck (true);	
-				} else {
-					sendAck (false);
+						sendAck(false);
+					}                   
+				}
+				catch (TimeoutException)
+				{
+					resceiveSize = 0;
+					errorCount++;
 				}
 
-				return buf.Length;
+			}
 
-				//sende ack eller ikke
+			errorCount = 0;
+			return resceiveSize;
 
-				//check what we got
-				//Console.WriteLine("something");
-				//for(int i = 0 ; i < 10 ; i++)
-				//{
-				//	Console.WriteLine(buf[i]);
-				//}		
 			
-
-
-
-
-			//sende ack eller ikke
-
-
-			return 0;
 		}
 	}
 }
