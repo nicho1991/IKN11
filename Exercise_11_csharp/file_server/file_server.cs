@@ -26,12 +26,12 @@ namespace Application
 		{
 
 			//create transport
-			Transport transport = new Transport (BUFSIZE);
+			Transport transport = new Transport (BUFSIZE,APP);
 			byte[] buffer = new byte[BUFSIZE];
 			int size = 0;
 			while (true) {
 
-				while((size = transport.Receive(ref buffer)) == 0)
+				while((size = transport.receive(ref buffer)) == 0)
 				{};
 
 
@@ -42,7 +42,7 @@ namespace Application
 					sendFile (tmp,transport);
 
 				}
-				transport = new Transport (BUFSIZE);
+				transport = new Transport (BUFSIZE,APP);
 			}
 		}
 
@@ -52,7 +52,7 @@ namespace Application
 
 			var size = (int)LIB.check_File_Exists (@filePath);
 			var response = Encoding.UTF8.GetBytes (size.ToString());
-			transport.Send (response,response.Length);
+			transport.send (response,response.Length);
 
 			if (size != 0) {
 
@@ -64,7 +64,7 @@ namespace Application
 				using (var fs = File.Open (@filePath, FileMode.Open)) {
 
 					while ((bytes = fileStream (fs, ref buf)) != 0) {
-						transport.Send (buf, bytes);
+						transport.send (buf, bytes);
 					}
 
 				}
