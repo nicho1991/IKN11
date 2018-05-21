@@ -43,7 +43,7 @@ namespace Application
 			Transportlaget.Transport transport = new Transportlaget.Transport(BUFSIZE,APP);
 			transport.send (req, req.Length);
 
-
+			Console.WriteLine ("waiting to receive");
 
 			//vent på at modtage fil her
 			receiveFile("penis.txt", new Transport(BUFSIZE, APP));
