@@ -174,11 +174,11 @@ namespace Transportlaget
 					while(( receiveSize = link.receive(ref buf)) > 0)
 					{
 						var checke = checksum.checkChecksum (buf, buf.Length);
-						Console.WriteLine (checke);
+						//Console.WriteLine (checke);
 						if (checke) {
 
 							//Thread.Sleep(520);
-
+							Console.WriteLine("sending ack");
 							sendAck (true);	
 							if(buf[(int) TransCHKSUM.SEQNO] == seqNo){
 								nextSeqNo();
@@ -196,6 +196,7 @@ namespace Transportlaget
 
 						}
 						else
+							Console.WriteLine("sending nack");
 							sendAck (false);
 					}
 
