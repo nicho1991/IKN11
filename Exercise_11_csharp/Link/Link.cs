@@ -36,7 +36,7 @@ namespace Linklaget
 			if(!serialPort.IsOpen)
 				serialPort.Open();
 
-			buffer = new byte[(BUFSIZE*2)];
+			buffer = new byte[(BUFSIZE*2) +2];
 
 			// Uncomment the next line to use timeout
 			//serialPort.ReadTimeout = 500;
@@ -79,34 +79,8 @@ namespace Linklaget
 				if (received == DELIMITER)
 					break;
 			}
-<<<<<<< HEAD
 			return counter;
 		}
-=======
-			//serialPort.DiscardInBuffer ();
-			//check what we got
-			//Console.WriteLine ("Link");
-			//for(int i = 0 ; i < size ; i++)
-			//{
-			//	Console.WriteLine(buf[i]);
-			//}	
-
-			//if data
-			if (size > 4) {
-				char startEnd = 'A';
-				//convert to string so we can manipulate
-
-				//temp buff to avoid transport layer
-				var tempBuf = new byte[size - 4];
-				for (int i = 4; i < size; i++) {
-					tempBuf [i - 4] = buf [i];
-				}
-
-
-				string request = System.Text.Encoding.ASCII.GetString (tempBuf);
-
-				string send = startEnd + request.Replace ("B", "BD").Replace ("A", "BC") + startEnd;
->>>>>>> 41ee3466ce2369a53544025823c53cc9b0b2d23f
 
 		private bool BeginReceive()
 		{
@@ -131,25 +105,9 @@ namespace Linklaget
 
 					continue;
 				}
-<<<<<<< HEAD
 				target[inserted++] = buffer[i];
 			}
 			return inserted;
-=======
-				//send the message
-				serialPort.Write (senderByteArray, 0, senderByteArray.Length);
-				//serialPort.DiscardOutBuffer ();
-
-			}
-
-			//if ack
-			if (size == 4) {
-				serialPort.Write (buf, 0, size);
-
-			}
-
-			//serialPort.DiscardOutBuffer ();
->>>>>>> 41ee3466ce2369a53544025823c53cc9b0b2d23f
 		}
 
 		private int Frame(byte[] buf, int size)

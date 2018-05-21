@@ -148,7 +148,7 @@ namespace Transportlaget
 
 
 			} while (receiveAck() != seqNo);
-			nextSeqNo();
+			nextSeqNo(); ////////////////////////////////////// update seqNo
 			old_seqNo = DEFAULT_SEQNO;
 		}
 
@@ -162,35 +162,32 @@ namespace Transportlaget
 		/// </param>
 		public int receive (ref byte[] buf)
 		{
+			int receiveSize = 0;
 			//check if theres something to receive.
+			while (receiveSize == 0) 
+			{				
+				try {
+					while(( receiveSize = link.receive(ref buf)) > 0)
+					{
+						var checke = checksum.checkChecksum (buf, buf.Length);
+						if (checke) {
+							//Console.WriteLine (checke);
+							sendAck (true);	
+							//figure out size 
 
-			int receiveSize = link.receive (ref buf);
-			while (receiveSize == 0) {
-				receiveSize = link.receive (ref buf);
-			}
 
-				var checke = checksum.checkChecksum(buf,buf.Length);
+							nextSeqNo();
+							break;
 
-				if (checke) {
-					//Console.WriteLine (checke);
-					sendAck (true);	
-					return buf.Length;
+						}
+						sendAck (false);
+					}
+
+				} catch (TimeoutException) {
+					receiveSize = 0;
 				}
-				sendAck (false);
-<<<<<<< HEAD
-				return 0;
-=======
-				return receiveSize;
->>>>>>> 41ee3466ce2369a53544025823c53cc9b0b2d23f
-
-				//sende ack eller ikke
-			//hej
-				//check what we got
-				//Console.WriteLine("something");
-				//for(int i = 0 ; i < 10 ; i++)
-				//{
-				//	Console.WriteLine(buf[i]);
-				//}		
+			}
+			return receiveSize;
 		}
 	}
 }
