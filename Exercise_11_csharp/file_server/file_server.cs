@@ -62,7 +62,7 @@ namespace Application
 					//Thread.Sleep (1000);
 					//Console.WriteLine ("sender nu");
 
-						transport.send (responsebuff, responsebuff.Length);
+					transport.send (responsebuff, responsebuff.Length);
 						Console.WriteLine ("navn sendt afsted");
 					
 
