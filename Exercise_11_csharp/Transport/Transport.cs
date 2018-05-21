@@ -196,9 +196,10 @@ namespace Transportlaget
 
 
 						}
-						else
+						else{
 							Console.WriteLine("sending nack");
 							sendAck (false);
+						}
 					}
 
 				} catch (TimeoutException) {
