@@ -122,36 +122,35 @@ namespace Transportlaget
 		/// </param>
 		public void send(byte[] buf,int size )
 		{
+			buffer[2] = seqNo;
+
+			buffer[3] = 0; //data
+
+			for (int i = 0; i < size; i++)
+			{
+				buffer[i+4] = buf[i];
+			}
+
+
+			checksum.calcChecksum(ref buffer,buffer.Length);
 
 				try
 				{
 					do
 					{
-					buffer[2] = seqNo;
-
-					buffer[3] = 0; //data
-
-					for (int i = 0; i < size; i++)
-					{
-						buffer[i+4] = buf[i];
-					}
-
-					Checksum checksum = new Checksum();
-					checksum.calcChecksum(ref buffer,buffer.Length);
-
-					link.send(buffer, size+4);
+					link.send(buffer, size+ 4);
 				
 					} while (receiveAck() != seqNo);
 				}
 				catch(TimeoutException){
-					
+				
 				}
 
 
 
 			
 			nextSeqNo(); ////////////////////////////////////// update seqNo
-			old_seqNo = DEFAULT_SEQNO;
+			//old_seqNo = DEFAULT_SEQNO;
 		}
 
 
@@ -191,6 +190,7 @@ namespace Transportlaget
 					receiveSize = 0;
 				}
 			}
+
 			return receiveSize;
 		}
 	}

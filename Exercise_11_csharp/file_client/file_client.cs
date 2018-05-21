@@ -33,20 +33,20 @@ namespace Application
 			///check for link lag
 
 			//Linklaget.Link client = new Linklaget.Link (BUFSIZE, APP);
-			byte[] req = new byte[256];
+			byte[] req = new byte[BUFSIZE];
 			//send en fil request
 			string request = "/root/Desktop/IKN11/Exercise_11_csharp/files/penis.txt";
 			Console.WriteLine($"trying to send {request}");
 			req = Encoding.ASCII.GetBytes(request);
 
 			///check for transport lag
-			Transportlaget.Transport transport = new Transportlaget.Transport(BUFSIZE,APP);
+			Transport transport = new Transport(BUFSIZE,APP);
 			transport.send (req, req.Length);
-
+			//int size = transport.receive (ref req);
 			Console.WriteLine ("waiting to receive");
 
 			//vent på at modtage fil her
-			receiveFile("penis.txt", new Transport(BUFSIZE, APP));
+			receiveFile("penis.txt", transport);
 
 			/*
 			System.Net.Sockets.TcpClient clientSocket = new System.Net.Sockets.TcpClient ();
