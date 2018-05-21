@@ -144,6 +144,7 @@ namespace Transportlaget
 						link.send(buffer, size+ 4);
 
 					} while (receiveAck() != seqNo);
+					break;
 
 				}
 				catch(TimeoutException){
@@ -179,7 +180,6 @@ namespace Transportlaget
 
 							//Thread.Sleep(520);
 
-
 							sendAck (true);	
 							if(buf[(int) TransCHKSUM.SEQNO] == seqNo){
 								nextSeqNo();
@@ -196,7 +196,8 @@ namespace Transportlaget
 
 
 						}
-						sendAck (false);
+						else
+							sendAck (false);
 					}
 
 				} catch (TimeoutException) {
