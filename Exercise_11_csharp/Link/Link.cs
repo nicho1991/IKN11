@@ -30,7 +30,7 @@ namespace Linklaget
 		public Link (int BUFSIZE, string APP)
 		{
 			// Create a new SerialPort object with default settings.
-				serialPort = new SerialPort("/dev/ttyS1",115200,Parity.None,8,StopBits.One);
+			serialPort = new SerialPort("/dev/ttyS1",115200,Parity.None,8,StopBits.One);
 
 
 			if(!serialPort.IsOpen)
@@ -86,7 +86,7 @@ namespace Linklaget
 				string request = System.Text.Encoding.ASCII.GetString (tempBuf);
 
 				string send = startEnd + request.Replace ("B", "BD").Replace ("A", "BC") + startEnd;
-		
+
 
 				tempBuf = System.Text.Encoding.ASCII.GetBytes (send);
 
@@ -129,7 +129,7 @@ namespace Linklaget
 				return 0;
 			}
 
-			serialPort.DiscardOutBuffer ();
+
 			//read from the port
 			int bytesToRead = serialPort.BytesToRead;
 
@@ -143,7 +143,6 @@ namespace Linklaget
 						Console.WriteLine(buf[i]);
 					}
 
-					serialPort.DiscardInBuffer ();
 					return bytesToRead;
 				}
 
@@ -154,9 +153,9 @@ namespace Linklaget
 					byte[] Linkbuf = new byte[bytesToRead-4];
 
 					for (int i = 4; i < bytesToRead; i++) 
-						{
-							Linkbuf [i - 4] = buf [i];
-						}
+					{
+						Linkbuf [i - 4] = buf [i];
+					}
 					//convert to ascii so we can revert to normal
 					string received = System.Text.Encoding.ASCII.GetString(Linkbuf);
 					Console.WriteLine ($"Link laget modtog: {received}");
@@ -170,11 +169,11 @@ namespace Linklaget
 						normal = normal.Replace("BD","B").Replace("BC","A");
 						//convert to byte[] and set buf
 						buf = System.Text.Encoding.ASCII.GetBytes(normal);
-						serialPort.DiscardInBuffer ();
+
 						return buf.Length;
 					}
 				}
-				serialPort.DiscardInBuffer ();
+
 				return 0;
 			}
 

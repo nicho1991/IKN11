@@ -76,11 +76,14 @@ namespace Transportlaget
 		private byte receiveAck()
 		{
 			byte[] buf = new byte[(int)TransSize.ACKSIZE];
-			int size = link.receive (ref buf);
+			int size = link.receive (ref buffer);
 			if (size != (int)TransSize.ACKSIZE)
 				return DEFAULT_SEQNO;
-			if (!checksum.checkChecksum (buf, (int)TransSize.ACKSIZE) || buf [(int)TransCHKSUM.SEQNO] != seqNo || buf [(int)TransCHKSUM.TYPE] != (int)TransType.ACK)
+			if(!checksum.checkChecksum(buffer, (int)TransSize.ACKSIZE) ||
+				buf[(int)TransCHKSUM.SEQNO] != seqNo ||
+				buf[(int)TransCHKSUM.TYPE] != (int)TransType.ACK)
 				return DEFAULT_SEQNO;
+
 			return seqNo;
 
 		}
@@ -159,20 +162,22 @@ namespace Transportlaget
 		/// </param>
 		public int receive (ref byte[] buf)
 		{
+
+
+
 			//check if theres something to receive.
 			if (link.receive(ref buf) > 0){
 				//finde ud af checksum
 
-					
 
 
 				var checke = checksum.checkChecksum(buf,buf.Length);
 
 				if (checke) {
 					//Console.WriteLine (checke);
-					sendAck (true);	
+					//sendAck (true);	
 				}
-					
+
 				return buf.Length;
 
 				//sende ack eller ikke

@@ -31,22 +31,29 @@ namespace Application
 			Console.WriteLine("Server started");
 			while (true) 
 			{
+				byte[] responsebuff = new byte[BUFSIZE]; 
 				byte[] buffer = new byte[BUFSIZE];
 				
 				if (transport.receive (ref buffer) > 0) { 
+
+					Console.WriteLine (buffer.Length+System.Text.Encoding.ASCII.GetString(buffer));
 					//check what we got here
 					string received = System.Text.Encoding.ASCII.GetString(buffer);
 					//this must be a filename!
 					Console.WriteLine($"After link layer server got filename: {received}");
 
+
 					//find the file
 					long filesize = LIB.check_File_Exists(received);
 
 
-					Thread.Sleep (100);
+					Thread.Sleep (500);
 					if (filesize != 0) {
-						//send the file
-						sendFile(received,filesize,transport);
+						Console.WriteLine ("\n Sendte: " + "\n Filnavn: " + received + "\n Størrelse: " + filesize);
+						string request = "Filnavn: " + received + "Størrelse: " + filesize;
+						responsebuff = Encoding.ASCII.GetBytes(request);
+						transport.send (responsebuff, responsebuff.Length);
+
 					}
 
 
