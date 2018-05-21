@@ -38,7 +38,7 @@ namespace Application
 				if (size != 0) {
 					string filePath = Encoding.UTF8.GetString (buffer, 0, size);
 
-					string tmp = Path.GetFullPath ("File_Server_Home/"+filePath);
+					string tmp = Path.GetFullPath ("/root/Desktop/IKN11/Exercise_11_csharp/files/"+filePath);
 					sendFile (tmp,transport);
 
 				}
@@ -52,7 +52,7 @@ namespace Application
 
 			var size = (int)LIB.check_File_Exists (@filePath);
 			var response = Encoding.UTF8.GetBytes (size.ToString());
-			transport.send (response,response.Length);
+			//transport.send (response,response.Length);
 
 			if (size != 0) {
 
