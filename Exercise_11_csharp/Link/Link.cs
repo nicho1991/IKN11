@@ -15,6 +15,9 @@ namespace Linklaget
 		/// The DELIMITE for slip protocol.
 		/// </summary>
 		const byte DELIMITER = (byte)'A';
+		const byte DELIMITERB = (byte)'B';
+		const byte DELIMITERC = (byte)'C';
+		const byte DELIMITERD = (byte)'D';
 		/// <summary>
 		/// The buffer for link.
 		/// </summary>
@@ -57,32 +60,32 @@ namespace Linklaget
 		/// </param>
 		public void send (byte[] buf, int size)
 		{
-			var byteCount = Frame (buf, size);
+			var byteCount = Framing (buf, size);
 			serialPort.Write(buffer, 0, byteCount);
 		}
 
 
 		public int receive (ref byte[] buf)
-		{			var sizeWithDelimiter = Receive ();
-			var size = Deframe (ref buf, sizeWithDelimiter);
+		{	
+			while (!ReceiveWaiter()) { }
+			int length = 0;
+
+			while (length < buffer.Length)
+			{
+				var received = (byte)serialPort.ReadByte();
+				buffer[length++] = received;
+				if (received == DELIMITER) // we got the full package
+					break;
+			}
+
+			int TotalSize = length;
+			var size = Deframing (ref buf, TotalSize);
 			return size;
 		}
 
-		private int Receive()
-		{
-			while (!BeginReceive()) { }
-			int counter = 0;
-			while (counter < buffer.Length)
-			{
-				var received = (byte)serialPort.ReadByte();
-				buffer[counter++] = received;
-				if (received == DELIMITER)
-					break;
-			}
-			return counter;
-		}
 
-		private bool BeginReceive()
+
+		private bool ReceiveWaiter()
 		{
 			var received = (byte)serialPort.ReadByte();
 			if (received == DELIMITER)
@@ -91,26 +94,26 @@ namespace Linklaget
 			return false;
 		}
 
-		private int Deframe(ref byte[] target, int size)
+		private int Deframing(ref byte[] Data, int size)
 		{
-			var inserted = 0;
+			var counter = 0;
 			for (var i = 0; i < size - 1; i++)
 			{
-				if (buffer[i] == (byte)'B')
+				if (buffer[i] == DELIMITERB) //check for A
 				{
-					if (buffer[++i] == (byte)'C')
-						target[inserted++] = (byte)'A';
+					if (buffer[++i] == DELIMITERC) //see if it really was A
+						Data[counter++] = DELIMITER; //make A
 					else
-						target[inserted++] = (byte)'B';
+						Data[counter++] = DELIMITERB; //keep the B
 
 					continue;
 				}
-				target[inserted++] = buffer[i];
+				Data[counter++] = buffer[i];
 			}
-			return inserted;
+			return counter;
 		}
 
-		private int Frame(byte[] buf, int size)
+		private int Framing(byte[] buf, int size)
 		{
 			var counter = 0;
 			var inserted = 0;
@@ -121,13 +124,13 @@ namespace Linklaget
 			{
 				if (buf[counter] == DELIMITER)
 				{
-					buffer[inserted++] = (byte)'B';
-					buffer[inserted++] = (byte)'C';
+					buffer[inserted++] = DELIMITERB;
+					buffer[inserted++] = DELIMITERC;
 				}
-				else if (buf[counter] == (byte)'B')
+				else if (buf[counter] == DELIMITERB)
 				{
-					buffer[inserted++] = (byte)'B';
-					buffer[inserted++] = (byte)'D';
+					buffer[inserted++] = DELIMITERB;
+					buffer[inserted++] = DELIMITERD;
 				}
 				else
 				{
