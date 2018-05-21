@@ -144,7 +144,7 @@ namespace Transportlaget
 				//Console.WriteLine(buffer.Length);
 				link.send(buffer, size +4 );
 
-				Thread.Sleep(250);
+				//Thread.Sleep(250);
 
 
 			} while (receiveAck() != seqNo);
@@ -162,14 +162,12 @@ namespace Transportlaget
 		/// </param>
 		public int receive (ref byte[] buf)
 		{
-
-
-
 			//check if theres something to receive.
-			if (link.receive(ref buf) > 0){
-				//finde ud af checksum
 
-
+			int receiveSize = link.receive (ref buf);
+			while (receiveSize == 0) {
+				receiveSize = link.receive (ref buf);
+			}
 
 				var checke = checksum.checkChecksum(buf,buf.Length);
 
@@ -188,15 +186,6 @@ namespace Transportlaget
 				//{
 				//	Console.WriteLine(buf[i]);
 				//}		
-			}
-
-
-
-
-			//sende ack eller ikke
-
-
-			return 0;
 		}
 	}
 }
