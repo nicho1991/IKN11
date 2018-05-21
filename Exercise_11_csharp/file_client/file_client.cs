@@ -35,7 +35,7 @@ namespace Application
 			Linklaget.Link client = new Linklaget.Link (BUFSIZE, APP);
 			byte[] req = new byte[256];
 			//send en fil request
-			string request = "/root/test/t.txt";
+			string request = "/root/Desktop/IKN11/Exercise_11_csharp/files/penis.txt";
 			Console.WriteLine($"trying to send {request}");
 			req = Encoding.ASCII.GetBytes(request);
 
@@ -46,7 +46,7 @@ namespace Application
 			
 
 			//vent på at modtage fil her
-			receiveFile("t.txt",transport);
+			receiveFile("penis.txt", new Transport(BUFSIZE, APP));
 
 			/*
 			System.Net.Sockets.TcpClient clientSocket = new System.Net.Sockets.TcpClient ();
