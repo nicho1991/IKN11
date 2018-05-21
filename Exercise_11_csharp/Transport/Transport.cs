@@ -185,12 +185,14 @@ namespace Transportlaget
 
 								break;
 							}
-							else{
+							else{ //not right seqno
 								continue;
 							}
 						}
+						else{ //checksum failed
+							sendAck(false);
+						}
 
-						sendAck(false);
 					}                   
 				}
 				catch (TimeoutException)
