@@ -124,27 +124,25 @@ namespace Transportlaget
 		{
 			do
 			{
-				buffer[2] = seqNo;
+				try{
+					buffer[2] = seqNo;
 
-				buffer[3] = 0; //data
+					buffer[3] = 0; //data
 
-				for (int i = 0; i < size; i++)
-				{
-					buffer[i+4] = buf[i];
+					for (int i = 0; i < size; i++)
+					{
+						buffer[i+4] = buf[i];
+					}
+
+					Checksum checksum = new Checksum();
+					checksum.calcChecksum(ref buffer,buffer.Length);
+
+					link.send(buffer, size +4 );
 				}
 
-				Checksum checksum = new Checksum();
-				checksum.calcChecksum(ref buffer,buffer.Length);
-
-				//check what we got
-				//for(int i = 0 ; i < 10 ; i++)
-				//{
-				//	Console.WriteLine(buffer[i]);
-				//}					
-				//Console.WriteLine(buffer.Length);
-				link.send(buffer, size +4 );
-
-				//Thread.Sleep(250);
+				catch(TimeoutException){
+					
+				}
 
 
 			} while (receiveAck() != seqNo);
