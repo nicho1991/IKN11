@@ -40,7 +40,7 @@ namespace Linklaget
 
 			// Uncomment the next line to use timeout
 			//serialPort.ReadTimeout = 500;
-
+			serialPort.ReadTimeout = 500;
 			serialPort.DiscardInBuffer ();
 			serialPort.DiscardOutBuffer ();
 
@@ -59,6 +59,8 @@ namespace Linklaget
 		{
 			if (!serialPort.IsOpen) {
 				return;
+
+
 
 			}
 			serialPort.DiscardInBuffer ();
@@ -137,9 +139,9 @@ namespace Linklaget
 				//if ack received
 
 				if (bytesToRead == 4) {
-					//for(int i = 0; i< bytesToRead; i++){
-						//Console.WriteLine(buf[i]);
-					//}
+					for(int i = 0; i< bytesToRead; i++){
+						Console.WriteLine(buf[i]);
+					}
 
 					return bytesToRead;
 				}
@@ -156,7 +158,7 @@ namespace Linklaget
 					}
 					//convert to ascii so we can revert to normal
 					string received = System.Text.Encoding.ASCII.GetString(Linkbuf);
-					Console.WriteLine ($"Link laget modtog: {received}");
+					//Console.WriteLine ($"Link laget modtog: {received}");
 
 
 					//see that message is contained in A - A
