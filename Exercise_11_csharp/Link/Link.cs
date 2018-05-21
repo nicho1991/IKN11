@@ -57,127 +57,87 @@ namespace Linklaget
 		/// </param>
 		public void send (byte[] buf, int size)
 		{
-			if (!serialPort.IsOpen) {
-				return;
-
-
-
-			}
-			serialPort.DiscardInBuffer ();
-			//check what we got
-			//Console.WriteLine ("Link");
-			//for(int i = 0 ; i < size ; i++)
-			//{
-			//	Console.WriteLine(buf[i]);
-			//}	
-
-			//if data
-			if (size > 4) {
-				char startEnd = 'A';
-				//convert to string so we can manipulate
-
-				//temp buff to avoid transport layer
-				var tempBuf = new byte[size - 4];
-				for (int i = 4; i < size; i++) {
-					tempBuf [i - 4] = buf [i];
-				}
-
-
-				string request = System.Text.Encoding.ASCII.GetString (tempBuf);
-
-				string send = startEnd + request.Replace ("B", "BD").Replace ("A", "BC") + startEnd;
-
-
-				tempBuf = System.Text.Encoding.ASCII.GetBytes (send);
-
-				var senderByteArray = new byte[send.Length + 4];
-				//put in the checksum etc
-				for (int i = 0; i < 4; i++) {
-					senderByteArray [i] = buf [i];
-				}
-				//put in data
-				for (int i = 4; i < tempBuf.Length + 4; i++) {
-					senderByteArray [i] = tempBuf [i - 4];
-				}
-				//send the message
-				serialPort.Write (senderByteArray, 0, senderByteArray.Length);
-				serialPort.DiscardOutBuffer ();
-
-			}
-
-			//if ack
-			if (size == 4) {
-				serialPort.Write (buf, 0, size);
-
-			}
-
-			serialPort.DiscardOutBuffer ();
+			var byteCount = Frame (buf, size);
+			serialPort.Write(buffer, 0, byteCount);
 		}
 
-		/// <summary>
-		/// Receive the specified buf and size.
-		/// </summary>
-		/// <param name='buf'>
-		/// Buffer.
-		/// </param>
-		/// <param name='size'>
-		/// Size.
-		/// </param>
+
 		public int receive (ref byte[] buf)
+		{			var sizeWithDelimiter = Receive ();
+			var size = Deframe (ref buf, sizeWithDelimiter);
+			return size;
+		}
+
+		private int Receive()
 		{
-			if (!serialPort.IsOpen) {
-				return 0;
+			while (!BeginReceive()) { }
+			int counter = 0;
+			while (counter < buffer.Length)
+			{
+				var received = (byte)serialPort.ReadByte();
+				buffer[counter++] = received;
+				if (received == DELIMITER)
+					break;
+			}
+			return counter;
+		}
+
+		private bool BeginReceive()
+		{
+			var received = (byte)serialPort.ReadByte();
+			if (received == DELIMITER)
+				return true;
+
+			return false;
+		}
+
+		private int Deframe(ref byte[] target, int size)
+		{
+			var inserted = 0;
+			for (var i = 0; i < size - 1; i++)
+			{
+				if (buffer[i] == (byte)'B')
+				{
+					if (buffer[++i] == (byte)'C')
+						target[inserted++] = (byte)'A';
+					else
+						target[inserted++] = (byte)'B';
+
+					continue;
+				}
+				target[inserted++] = buffer[i];
+			}
+			return inserted;
+		}
+
+		private int Frame(byte[] buf, int size)
+		{
+			var counter = 0;
+			var inserted = 0;
+
+			buffer[inserted++] = DELIMITER;
+
+			while (counter < size)
+			{
+				if (buf[counter] == DELIMITER)
+				{
+					buffer[inserted++] = (byte)'B';
+					buffer[inserted++] = (byte)'C';
+				}
+				else if (buf[counter] == (byte)'B')
+				{
+					buffer[inserted++] = (byte)'B';
+					buffer[inserted++] = (byte)'D';
+				}
+				else
+				{
+					buffer[inserted++] = buf[counter];
+				}
+				counter++;
 			}
 
-
-			//read from the port
-			int bytesToRead = serialPort.BytesToRead;
-
-			//check if there is something to read
-			if(bytesToRead > 0){
-				serialPort.Read (buf, 0, bytesToRead);
-				//if ack received
-
-				if (bytesToRead == 4) {
-					//for(int i = 0; i< bytesToRead; i++){
-					//	Console.WriteLine(buf[i]);
-					//}
-
-					return bytesToRead;
-				}
-
-
-				//if data received
-				if(bytesToRead > 4){
-					//split up so we dont look at transport
-					byte[] Linkbuf = new byte[bytesToRead-4];
-
-					for (int i = 4; i < bytesToRead; i++) 
-					{
-						Linkbuf [i - 4] = buf [i];
-					}
-					//convert to ascii so we can revert to normal
-					string received = System.Text.Encoding.ASCII.GetString(Linkbuf);
-					//Console.WriteLine ($"Link laget modtog: {received}");
-
-
-					//see that message is contained in A - A
-					if(received.StartsWith("A") && received.EndsWith("A"))
-					{
-						//remove Start and end
-						string normal = received.Replace("A","");
-						normal = normal.Replace("BD","B").Replace("BC","A");
-						//convert to byte[] and set buf
-						buf = System.Text.Encoding.ASCII.GetBytes(normal);
-
-						return buf.Length;
-					}
-				}
-
-				return 0;
-			}
-
-			return 0;
+			buffer[inserted++] = DELIMITER;
+			return inserted;
 		}
 	}
 }

@@ -35,7 +35,9 @@ namespace Application
 				byte[] buffer = new byte[BUFSIZE];
 
 				//receive
-				transport.receive (ref buffer);
+				while(transport.receive (ref buffer) == 0)
+				{}
+
 
 				//Console.WriteLine (buffer.Length+System.Text.Encoding.ASCII.GetString(buffer));
 				//check what we got here

@@ -174,9 +174,10 @@ namespace Transportlaget
 				if (checke) {
 					//Console.WriteLine (checke);
 					sendAck (true);	
+					return buf.Length;
 				}
 				sendAck (false);
-				return buf.Length;
+				return 0;
 
 				//sende ack eller ikke
 			//hej
