@@ -145,6 +145,7 @@ namespace Transportlaget
 						//Console.WriteLine("got no ack seq is: " + seqNo );
 					} while (receiveAck() != seqNo);
 					nextSeqNo(); ////////////////////////////////////// update seqNo
+					Console.WriteLine(seqNo);
 					break;
 
 				}
@@ -167,6 +168,7 @@ namespace Transportlaget
 		/// </param>
 		public int receive (ref byte[] buf)
 		{
+
 			int receiveSize = 0;
 			//check if theres something to receive.
 			while (receiveSize == 0 && errorCount < 5) 
@@ -177,11 +179,13 @@ namespace Transportlaget
 						var checke = checksum.checkChecksum (buf, buf.Length);
 						//Console.WriteLine (checke);
 						if (checke) {
-
+					
 							//Thread.Sleep(520);
-							Console.WriteLine("sending ack");
-							sendAck (true);	
+							Console.WriteLine("sending ack "+ "ack is "+ seqNo);
+
 							if(buf[(int) TransCHKSUM.SEQNO] == seqNo){
+
+								sendAck (true);	
 								nextSeqNo();
 
 								//figure out size 
