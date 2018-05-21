@@ -144,6 +144,7 @@ namespace Transportlaget
 						link.send(buffer, size+ 4);
 
 					} while (receiveAck() != seqNo);
+					nextSeqNo(); ////////////////////////////////////// update seqNo
 					break;
 
 				}
@@ -151,8 +152,6 @@ namespace Transportlaget
 					errorCount++;
 				}
 
-				nextSeqNo(); ////////////////////////////////////// update seqNo
-				old_seqNo = DEFAULT_SEQNO;
 			}
 			errorCount = 0;
 		}
