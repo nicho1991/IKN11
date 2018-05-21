@@ -39,9 +39,12 @@ namespace Application
 			Console.WriteLine($"trying to send {request}");
 			req = Encoding.ASCII.GetBytes(request);
 
+
 			///check for transport lag
 			Transport transport = new Transport(BUFSIZE,APP);
 			transport.send (req, req.Length);
+
+			Console.WriteLine ("the requst has been send");
 			//int size = transport.receive (ref req);
 			Console.WriteLine ("waiting to receive");
 
