@@ -179,7 +179,7 @@ namespace Transportlaget
 				return buf.Length;
 
 				//sende ack eller ikke
-
+			//hej
 				//check what we got
 				//Console.WriteLine("something");
 				//for(int i = 0 ; i < 10 ; i++)
