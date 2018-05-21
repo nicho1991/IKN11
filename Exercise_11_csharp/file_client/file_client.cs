@@ -20,6 +20,7 @@ namespace Application
 		public static void Main (string[] args)
 		{
 			Console.WriteLine (APP);
+			Console.WriteLine ("reques a file with a path");
 			string path = Console.ReadLine ();
 			file_client client = new file_client (path);
 
