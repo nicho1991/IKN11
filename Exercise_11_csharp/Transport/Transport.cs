@@ -142,7 +142,7 @@ namespace Transportlaget
 
 						//Console.WriteLine("t");
 						link.send(buffer, size+ 4);
-
+						Console.WriteLine("got no ack seq is: " + seqNo );
 					} while (receiveAck() != seqNo);
 					nextSeqNo(); ////////////////////////////////////// update seqNo
 					break;
