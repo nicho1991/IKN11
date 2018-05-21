@@ -60,6 +60,7 @@ namespace Linklaget
 		/// </param>
 		public void send (byte[] buf, int size)
 		{
+
 			var byteCount = Framing (buf, size);
 			serialPort.Write(buffer, 0, byteCount);
 		}

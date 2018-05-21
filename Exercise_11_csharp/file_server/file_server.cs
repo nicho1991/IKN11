@@ -53,10 +53,13 @@ namespace Application
 
 				if (filesize != 0) {
 					
-					Console.WriteLine ("\n Sendte: " + "\n Filnavn: " + received + "\n Størrelse: " + filesize);
+					Console.WriteLine ("\n Sender: " + "\n Filnavn: " + received + "\n Størrelse: " + filesize);
 					string request = "Filnavn: " + received + "Størrelse: " + filesize;
 					responsebuff = Encoding.ASCII.GetBytes (request);
+					Console.WriteLine ("sender om lidt..");
+					Thread.Sleep (1000);
 					transport.send (responsebuff, responsebuff.Length);
+					Console.WriteLine ("navn sendt afsted");
 				} else {
 					Console.WriteLine ("file not found");
 				}
