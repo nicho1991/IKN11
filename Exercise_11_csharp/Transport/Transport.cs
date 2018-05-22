@@ -1,7 +1,9 @@
 using System;
 using Linklaget;
 using System.Threading;
-
+using System;
+using System.IO;
+using System.Text;
 
 /// <summary>
 /// Transport.
@@ -143,7 +145,8 @@ namespace Transportlaget
 						link.send(buffer, size+ 4);
 						//Console.WriteLine("got no ack seq is: " + seqNo );
 					} while (receiveAck() != seqNo);
-					nextSeqNo(); ////////////////////////////////////// update seqNo
+
+
 					//Console.WriteLine(seqNo);
 					break;
 
@@ -154,6 +157,8 @@ namespace Transportlaget
 				}
 
 			}
+
+			nextSeqNo();
 			errorCount = 0;
 		}
 
@@ -178,25 +183,24 @@ namespace Transportlaget
 						var checke = checksum.checkChecksum (buf, buf.Length);
 						//Console.WriteLine (checke);
 						if (checke) {
-					
-							//Thread.Sleep(520);
-							Console.WriteLine("sending ack "+ "ack is "+ seqNo);
-
-							sendAck (true);
-							if(buf[(int) TransCHKSUM.SEQNO] == seqNo){
 	
-								nextSeqNo();
-								receiveSize = buffer.Length < receiveSize - (int)TransSize.ACKSIZE? buf.Length : receiveSize - (int)TransSize.ACKSIZE;
+
+							if(buf[(int) TransCHKSUM.SEQNO] == seqNo){
+
+								sendAck (true);
+								//receiveSize = buffer.Length < receiveSize - (int)TransSize.ACKSIZE? buf.Length : receiveSize - (int)TransSize.ACKSIZE;
 								var tempbuf = buf;
 
 								Array.Copy(tempbuf,(int)TransSize.ACKSIZE, buf,0,receiveSize);
 								break;
 							}
+							else
+							 sendAck (false);
 
 							continue;
 						}
-							Console.WriteLine("sending nack");
-							sendAck (false);
+
+
 						
 					}
 
@@ -206,6 +210,7 @@ namespace Transportlaget
 					receiveSize = 0;
 				}
 			}
+			nextSeqNo();
 			errorCount = 0;
 			return receiveSize;
 		}
