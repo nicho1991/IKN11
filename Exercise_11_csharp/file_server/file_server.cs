@@ -77,55 +77,61 @@ namespace Application
 
 					transport.send (responsebuff, responsebuff.Length);
 					Console.WriteLine ("størrelse sendt afsted");
-			
+
+					sendFile (received, filesize, transport);
 
 
+					//send data	
+					/*
+					Console.WriteLine ("Sending file: " + received + " to client");
 
+					var fileBuf = new byte[BUFSIZE];
+					var bytesRead = 0;
 
-				} else {
+					using (var fileStream = File.Open (received, FileMode.Open)) {
+
+						while ((bytesRead = ReadChunk (fileStream, ref fileBuf)) != 0) {
+							transport.send (fileBuf, bytesRead);
+						}
+
+					}
+						Console.WriteLine ("The requested file was sent");
+
+					*/
+
+				} 
+				else {
 					Console.WriteLine ("file not found");
 				}
-
+				
 				//done reset transport
 				transport = new Transport (BUFSIZE, APP);
 
 
 				}
-			/*
-			while (true) {
-				//wait for client
-				clientSocket = serverSocket.AcceptTcpClient ();
-				Console.WriteLine ("client connected");
 
-				//opretter en stream fra client
-				NetworkStream serverStreamIO = clientSocket.GetStream (); 
-				Console.WriteLine (" >> Accepted connection from client");
 
-				//modtager filnavn
-				string fileDir; //= @"/root/Desktop/IKNServerClientTCP/Exercise_6_server/file_server/bin/Debug/files/";
-				string userfile = tcp.LIB.readTextTCP (serverStreamIO);
 
-				fileDir = userfile;
-				//check for exsitens af fil
-				long lengthOfFile = tcp.LIB.check_File_Exists (fileDir);
 
-				if (lengthOfFile != 0) {//filen findes
-					Console.WriteLine ("filen findes " + fileDir);
-					//find størrelsen på filen
-					//long filesize = new System.IO.FileInfo (fileDir).Length;
-					long filesize = LIB.check_File_Exists(fileDir);
-					//send the file
-					sendFile (fileDir, filesize, serverStreamIO);
-				} else { //filen exsitere ikke
-					Console.WriteLine ("Filen findes ikke " + fileDir);
-					tcp.LIB.writeTextTCP (serverStreamIO, "filen findes ikke");
+		}
+
+		/// <summary>
+		/// Reads the chunk.  https://stackoverflow.com/questions/5659189/how-to-split-a-large-file-into-chunks-in-c
+		/// </summary>
+		/// <returns>index of the chunk</returns>
+		/// <param name="stream">Stream.</param>
+		/// <param name="chunk">Chunk.</param>
+		private int ReadChunk(FileStream stream, ref byte[] chunk)
+		{
+			int index = 0;
+			while (index < chunk.Length) {
+				int bytesRead = stream.Read (chunk, index, chunk.Length - index);
+				if (bytesRead == 0) {
+					break;
 				}
-				//clientSocket.Close ();
+				index += bytesRead;
 			}
-
-
-			serverSocket.Stop();
-			*/
+			return index;
 		}
 
 		/// <summary>
@@ -143,20 +149,7 @@ namespace Application
 		private void sendFile(String fileName, long fileSize, Transport transport)
 		{
 
-			//send the size
-			string filesizestring = fileSize.ToString();
-
-
-
 			byte[] filesizebuf = new byte[BUFSIZE];
-
-			filesizebuf = Encoding.ASCII.GetBytes (filesizestring);
-
-			//send it
-			//Console.WriteLine(filesizebuf.Length);
-			transport.send (filesizebuf, filesizebuf.Length);
-
-
 
 			//get file
 			FileStream fs = new FileStream (fileName, FileMode.Open, FileAccess.Read);
