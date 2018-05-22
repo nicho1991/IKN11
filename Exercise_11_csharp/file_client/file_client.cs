@@ -88,11 +88,10 @@ namespace Application
 			Console.WriteLine ("modtog filnavn: " + fileNameReceived);
 
 
-
 			//then receive size in string format
 			size = transport.receive(ref filesizebyte);
-			string fileSizeReceived = Encoding.ASCII.GetString (filesizebyte);
-			Console.WriteLine ("modtog filnavn: " + fileSizeReceived);
+			string fileSizeReceived = Encoding.UTF8.GetString(filesizebyte,0,size -4 );
+			Console.WriteLine ("modtog størrelse: " + fileSizeReceived);
 
 			//now receive the data
 
