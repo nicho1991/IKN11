@@ -28,8 +28,10 @@ namespace Linklaget
 		SerialPort serialPort;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="link"/> class.
+		/// Initializes a new instance of the <see cref="Linklaget.Link"/> class.
 		/// </summary>
+		/// <param name="BUFSIZE">BUFSIZ.</param>
+		/// <param name="APP">AP.</param>
 		public Link (int BUFSIZE, string APP)
 		{
 			// Create a new SerialPort object with default settings.
@@ -39,10 +41,8 @@ namespace Linklaget
 			if(!serialPort.IsOpen)
 				serialPort.Open();
 
-			buffer = new byte[(BUFSIZE*2) +2];
+			buffer = new byte[(BUFSIZE*2) +2]; //maximum possible size if all is A's
 
-			// Uncomment the next line to use timeout
-			//serialPort.ReadTimeout = 500;
 			serialPort.ReadTimeout = 500;
 			serialPort.DiscardInBuffer ();
 			serialPort.DiscardOutBuffer ();
@@ -52,98 +52,88 @@ namespace Linklaget
 		/// <summary>
 		/// Send the specified buf and size.
 		/// </summary>
-		/// <param name='buf'>
-		/// Buffer.
-		/// </param>
-		/// <param name='size'>
-		/// Size.
-		/// </param>
+		/// <param name="buf">Buffer.</param>
+		/// <param name="size">Size.</param>
 		public void send (byte[] buf, int size)
 		{
-			
-			var byteCount = Framing (buf, size);
-			serialPort.Write(buffer, 0, byteCount);
-
+			var CountToSend = Insert (buf, size);
+			serialPort.Write(buffer, 0, CountToSend);
 		}
 
+		private int Insert(byte[] buf, int size)
+		{
 
-		public int receive (ref byte[] buf)
-		{	
-			while (!ReceiveWaiter()) { }
-			int length = 0;
+			var number = 1;
 
-			while (length < buffer.Length)
+			buffer[number-1] = DELIMITER; //start of file
+			for (int i = 0; i < size; i++) 
 			{
-				var received = (byte)serialPort.ReadByte();
-				buffer[length++] = received;
-				if (received == DELIMITER) // we got the full package
-					break;
+				if (buf[i] == DELIMITER) // this is A , becomes BC
+				{
+					buffer[number] = DELIMITERB;
+					buffer[number+1] = DELIMITERC;
+					number += 1;
+				}
+				else if (buf[i] == DELIMITERB) //this is B, becomes BD
+				{
+					buffer[number] = DELIMITERB;
+					buffer[number+1] = DELIMITERD;
+					number += 2; // two more in the sequence
+				}
+				else
+				{
+					buffer[number] = buf[i]; //do nothing
+					number++;
+				}
 			}
 
-			int TotalSize = length;
-			var size = Deframing (ref buf, TotalSize);
+			buffer[number] = DELIMITER; //end of file
+			return number+1;
+		}
 
-			return size;
+		/// <summary>
+		/// Receive the specified buf.
+		/// </summary>
+		/// <param name="buf">Buffer.</param>
+		public int receive (ref byte[] buf)
+		{	
+			while((byte)serialPort.ReadByte() != DELIMITER)
+			{
+				//shouldnt really get here , safety feature
+			}
+
+			int ReceiveLength = 0;
+
+			for (int Length = 1; Length < buffer.Length;Length++) {
+				
+				buffer[Length-1] = (byte)serialPort.ReadByte(); //arrays start at zero
+				if (buffer[Length-1]== DELIMITER) 				// we got the full package
+				{
+					ReceiveLength = Length; 
+					break;
+				}
+			}
+
+			return Extract (ref buf, ReceiveLength); // find the real size
 		}
 
 
 
-		private bool ReceiveWaiter()
-		{
-			var received = (byte)serialPort.ReadByte();
-			if (received == DELIMITER)
-				return true;
 
-			return false;
-		}
-
-		private int Deframing(ref byte[] Data, int size)
+		private int Extract(ref byte[] ExtractData, int size)
 		{
 			var counter = 0;
-			for (var i = 0; i < size - 1; i++)
+			for (var i = 1; i < size; i++)
 			{
-				if (buffer[i] == DELIMITERB) //check for A
+				if (buffer[i-1] == DELIMITERB) //check for A
 				{
-					if (buffer[++i] == DELIMITERC) //see if it really was A
-						Data[counter++] = DELIMITER; //make A
-					else
-						Data[counter++] = DELIMITERB; //keep the B
-
-					continue;
+					ExtractData[counter++] = (DELIMITERC == buffer[i]) ? DELIMITER : DELIMITERB;
 				}
-				Data[counter++] = buffer[i];
+				ExtractData[counter++] = buffer[i-1];
 			}
 			return counter;
 		}
 
-		private int Framing(byte[] buf, int size)
-		{
-			var counter = 0;
-			var inserted = 0;
 
-			buffer[inserted++] = DELIMITER;
-
-			while (counter < size)
-			{
-				if (buf[counter] == DELIMITER)
-				{
-					buffer[inserted++] = DELIMITERB;
-					buffer[inserted++] = DELIMITERC;
-				}
-				else if (buf[counter] == DELIMITERB)
-				{
-					buffer[inserted++] = DELIMITERB;
-					buffer[inserted++] = DELIMITERD;
-				}
-				else
-				{
-					buffer[inserted++] = buf[counter];
-				}
-				counter++;
-			}
-
-			buffer[inserted++] = DELIMITER;
-			return inserted;
-		}
 	}
 }

@@ -119,8 +119,8 @@ namespace Application
 		/// Reads the chunk.  https://stackoverflow.com/questions/5659189/how-to-split-a-large-file-into-chunks-in-c
 		/// </summary>
 		/// <returns>index of the chunk</returns>
-		/// <param name="stream">Stream.</param>
-		/// <param name="chunk">Chunk.</param>
+		/// <param name="stream">the filestream to use</param>
+		/// <param name="chunk">The byte</param>
 		private int ReadChunk(FileStream stream, ref byte[] chunk)
 		{
 			int index = 0;
