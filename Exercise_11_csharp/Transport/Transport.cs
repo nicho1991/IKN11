@@ -47,10 +47,6 @@ namespace Transportlaget
 		/// The data received. True = received data in receiveAck, False = not received data in receiveAck
 		/// </summary>
 		private bool dataReceived;
-		/// <summary>
-		/// The number of data the recveived.
-		/// </summary>
-		private int recvSize = 0;
 
 
 
