@@ -88,13 +88,38 @@ namespace Application
 			Console.WriteLine ("modtog filnavn: " + fileNameReceived);
 
 
-
 			//then receive size in string format
 			size = transport.receive(ref filesizebyte);
-			string fileSizeReceived = Encoding.ASCII.GetString (filesizebyte);
-			Console.WriteLine ("modtog filnavn: " + fileSizeReceived);
+			string fileSizeReceived = Encoding.UTF8.GetString(filesizebyte,0,size -4 );
+			Console.WriteLine ("modtog størrelse: " + fileSizeReceived);
 
-			//now receive the data
+
+
+
+
+
+			//modtag fil
+			int fileSize = Int32.Parse (fileSizeReceived);
+
+			FileStream fs = new FileStream(fileNameReceived,FileMode.OpenOrCreate,FileAccess.Write);
+
+			Int32 bytesReceived = 0;
+			Int64 totalbytedReceived = 0;
+			Int64 megaByte = 1048576;
+			while ((bytesReceived = transport.receive (ref filesizebyte))>0) {
+				totalbytedReceived += bytesReceived;
+				fs.Write (filesizebyte, 0, bytesReceived);
+				int percentCompleted = (int)Math.Round(((double)(totalbytedReceived/(double)fileSize)*100));
+				Console.Write("\r{0} ", "Received: " + totalbytedReceived/megaByte + " Mbytes" + " Out of " + fileSize/megaByte + " Mbytes" + " total: " +  percentCompleted + " %");
+			}
+			if (totalbytedReceived > 0) {
+				Console.WriteLine("You have received a file! congratulations!");
+			}
+			else{
+				Console.WriteLine ("Sadly you did not receive a file :( ");
+			}
+
+
 
 
 
