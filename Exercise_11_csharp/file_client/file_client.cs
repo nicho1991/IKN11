@@ -101,14 +101,14 @@ namespace Application
 			//modtag fil
 			int fileSize = Int32.Parse (fileSizeReceived);
 
-			FileStream fs = new FileStream(fileNameReceived,FileMode.OpenOrCreate,FileAccess.Write);
+			FileStream fs = new FileStream(fileNameReceived,FileMode.Create,FileAccess.Write);
 
 			Int32 bytesReceived = 0;
 			Int64 totalbytedReceived = 0;
 			Int64 megaByte = 1048576;
 			while ((bytesReceived = transport.receive (ref filesizebyte))>0) {
 				totalbytedReceived += bytesReceived;
-				fs.Write (filesizebyte, 0, bytesReceived);
+				fs.Write (filesizebyte, 0, bytesReceived-4);
 				int percentCompleted = (int)Math.Round(((double)(totalbytedReceived/(double)fileSize)*100));
 				Console.Write("\r{0} ", "Received: " + totalbytedReceived/megaByte + " Mbytes" + " Out of " + fileSize/megaByte + " Mbytes" + " total: " +  percentCompleted + " %");
 			}
