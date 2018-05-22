@@ -78,15 +78,28 @@ namespace Application
 		/// </param>
 		private void receiveFile (String fileName, Transport transport)
 		{
+
 			int size = 0;
 			byte[] filesizebyte = new byte[BUFSIZE];
-			while((size = transport.receive(ref filesizebyte)) == 0){
-				Console.WriteLine("Waiting for data");
-			}
-				string filesize = Encoding.ASCII.GetString (filesizebyte);
 
-				Console.WriteLine (filesize);
-			
+			//first we receive name
+			size = transport.receive (ref filesizebyte);
+			string fileNameReceived = Encoding.UTF8.GetString(filesizebyte,0,size -4 );
+			Console.WriteLine ("modtog filnavn: " + fileNameReceived);
+
+
+
+			//then receive size in string format
+			size = transport.receive(ref filesizebyte);
+			string fileSizeReceived = Encoding.ASCII.GetString (filesizebyte);
+			Console.WriteLine ("modtog filnavn: " + fileSizeReceived);
+
+			//now receive the data
+
+
+
+
+
 
 
 			// TO DO Your own code
