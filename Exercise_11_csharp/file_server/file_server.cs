@@ -38,7 +38,7 @@ namespace Application
 				//receive
 				while((size = transport.receive (ref buffer)) == 0)
 				{
-					Console.Write("\rwaiting for name");
+					//Console.Write("\rwaiting for name");
 				}
 				Console.WriteLine ("received a name");
 
