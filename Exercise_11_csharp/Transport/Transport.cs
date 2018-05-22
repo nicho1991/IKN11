@@ -186,8 +186,7 @@ namespace Transportlaget
 							if(buf[(int) TransCHKSUM.SEQNO] == seqNo){
 	
 								nextSeqNo();
-
-								//figure out size 
+								receiveSize = buffer.Length < receiveSize - (int)TransSize.ACKSIZE? buf.Length : receiveSize - (int)TransSize.ACKSIZE;
 								var tempbuf = buf;
 
 								Array.Copy(tempbuf,(int)TransSize.ACKSIZE, buf,0,receiveSize);
