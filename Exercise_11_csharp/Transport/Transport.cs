@@ -150,7 +150,7 @@ namespace Transportlaget
 				}
 				catch(TimeoutException){
 					errorCount++;
-					Console.WriteLine ("timeout");
+					//Console.WriteLine ("timeout");
 				}
 
 			}
@@ -203,7 +203,7 @@ namespace Transportlaget
 
 				} catch (TimeoutException) {
 					errorCount++;
-					Console.WriteLine ("timeout");
+					//Console.WriteLine ("timeout");
 					receiveSize = 0;
 				}
 			}

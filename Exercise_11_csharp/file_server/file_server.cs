@@ -38,7 +38,7 @@ namespace Application
 				//receive
 				while((size = transport.receive (ref buffer)) == 0)
 				{
-					Console.WriteLine ("waiting for name");
+					Console.Write("\rwaiting for name");
 				}
 				Console.WriteLine ("received a name");
 
@@ -46,29 +46,49 @@ namespace Application
 				//check what we got here
 				string received = Encoding.UTF8.GetString(buffer,0,size -4 );
 				//this must be a filename!
-				Console.WriteLine($"After link layer server got filename: {received}");
+				//Console.WriteLine($"After link layer server got filename: {received}");
 
 				//find the file
 				long filesize = LIB.check_File_Exists(received);
 
 
-
+				//send størrelse:
 				if (filesize != 0) {
 					Console.WriteLine ("found the file");
-					Console.WriteLine ("\n Sender: " + "\n Filnavn: " + received + "\n Størrelse: " + filesize);
-					string request = "Filnavn: " + received + "Størrelse: " + filesize;
-					responsebuff = Encoding.ASCII.GetBytes (request);
+					//Console.WriteLine ("\n Sender: " + "\n Størrelse: " + filesize);
+
+					string filename = LIB.extractFileName (received);
+					Console.WriteLine ("filename is " + filename);
+
+
 					//Console.WriteLine ("sender om lidt..");
 					//Thread.Sleep (1000);
-					//Console.WriteLine ("sender nu");
+					Console.WriteLine ("sender navn " + filename);
+
+					string requestName = filename;
+					responsebuff = Encoding.ASCII.GetBytes (requestName);
+					transport.send (responsebuff, responsebuff.Length);
+					Console.WriteLine ("navn sendt afsted");
+
+
+					string requestSize = filesize.ToString();
+					responsebuff = Encoding.ASCII.GetBytes (requestSize);
+					Console.WriteLine ("sender størrelse " + filesize);
 
 					transport.send (responsebuff, responsebuff.Length);
-						Console.WriteLine ("navn sendt afsted");
-					
+					Console.WriteLine ("størrelse sendt afsted");
+			
+
+
+
 
 				} else {
 					Console.WriteLine ("file not found");
 				}
+
+				//done reset transport
+				transport = new Transport (BUFSIZE, APP);
+
 
 				}
 			/*
